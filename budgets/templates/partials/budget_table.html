@@ -1,0 +1,124 @@
+{% load humanize %}
+<div id="budget-result">
+    {% if budgets %}
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="saas-table">
+                <thead>
+                    <tr>
+                        <th>Target Period</th>
+                        <th>Category</th>
+                        <th class="text-right">Budget</th>
+                        <th class="text-right">Spent</th>
+                        <th class="text-right">Remaining</th>
+                        <th class="text-center">Used %</th>
+                        <th class="text-center">Progress</th>
+                        <th>status</th>
+                        <th class="text-right" style="padding-right: 2rem;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for budget in budgets %}
+                    <tr>
+                        <td class="text-right font-medium" style="white-space: nowrap;">{{ budget.get_month_display }} {{ budget.year }}</td>
+                        <td><span class="badge-category badge-{{ budget.get_category_display|lower }}" style="white-space: nowrap;">{{ budget.get_category_display }}</span></td>
+                        <td class="text-right font-medium" style="white-space: nowrap;">Rs {{ budget.amount|floatformat:"0"|intcomma }}</td>
+                        <td class="text-right text-danger font-medium" style="white-space: nowrap;">Rs {{ budget.spent|floatformat:"0"|intcomma }}</td>
+                        <td class="text-right positive font-semibold" style="white-space: nowrap;">Rs {{ budget.remaining|floatformat:"0"|intcomma }}</td>
+                        <td class="text-center font-semibold text-muted" style="font-size: 0.85rem; white-space: nowrap;">
+                            {{ budget.percentage_used }} %
+                        </td>
+                        <td class="text-center">
+                            <div style="display: inline-flex; align-items: center; gap: 0.5rem; justify-content: center; white-space: nowrap;">
+                                <progress value="{{ budget.progress_percentage }}" max="100"></progress>
+                            </div>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <span class="status-pill">
+                                {% if budget.status == "Within Budget" %}
+                                    <span style="color: #10b981;">●</span> {{ budget.status }}
+                                {% elif budget.status == "Budget Reached" %}
+                                    <span style="color: #f59e0b;">●</span> {{ budget.status }}
+                                {% elif budget.status == "Exceeded Budget" %}
+                                    <span style="color: #ef4444;">●</span> {{ budget.status }}
+                                {% else %}
+                                    <span style="color: #cbd5e1;">●</span> {{ budget.status }}
+                                {% endif %}
+                            </span>
+                            {% if budget.warning_message %}
+                                <span class="warning-message">⚠ {{ budget.warning_message }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-right">
+                            <div class="action-cell-group" style="white-space: nowrap;">
+                                <a href="{% url 'budget_detail' budget.pk %}" class="action-btn detail" title="View">
+                                    <i style="color: #4f46e5;" data-lucide="eye"></i>
+                                </a>
+                                <a href="{% url 'budget_edit' budget.pk %}" class="action-btn edit" title="Edit">
+                                    <i style="color:#d97706;" data-lucide="edit-2"></i>
+                                </a>
+                                <form action="{% url 'budget_delete' budget.pk %}" method="post" class="inline-delete-form" style="display: inline-block;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="action-btn delete" title="Delete">
+                                        <i style="color:#ef4444;" width="24" height="24" data-lucide="trash-2"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="table-card">
+        <div class="empty-wrapper">
+            <i data-lucide="chart-column-increasing" class="empty-icon"></i>
+            <h3>No budgets found</h3>
+            <p>You haven't declared allocation benchmarks matching these parameters.</p>
+            <a href="{% url 'budget_add' %}" class="btn btn-primary" style="margin-top: 0.5rem;">
+                Create your first budget
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if is_paginated %}
+    <div class="pagination-container">
+        <div class="pagination-info">
+            Page <span class="font-semibold text-main">{{ page_obj.number }}</span> of {{ page_obj.paginator.num_pages }}
+        </div>
+        <div class="pagination-buttons">
+            {% if page_obj.has_previous %}
+                <a href="?{{query_string}}&page={{ page_obj.previous_page_number }}" class="btn btn-outline-sm">Previous</a>
+            {% endif %}
+            {% if page_obj.number > 3 %}
+            <a href="?{{query_string}}&page=1" class="btn btn-outline-sm">1</a>
+                {% if page_obj.number > 4 %}
+                <span>...</span>
+                {% endif %}
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                {% if num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                    {% if page_obj.number == num %}
+                        <span class="btn btn-primary">{{ num }}</span>
+                    {% else %}
+                        <a href="?{{query_string}}&page={{ num }}" class="btn btn-outline-sm">{{ num }}</a>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.number < page_obj.paginator.num_pages|add:"-2" %}
+                {% if page_obj.number < page_obj.paginator.num_pages|add:"-3" %}
+                <span>...</span>
+                {% endif %}
+                <a href="?{{query_string}}&page={{page_obj.paginator.num_pages}}" class="btn btn-outline-sm">{{page_obj.paginator.num_pages}}</a>
+            {% endif %}
+            
+            {% if page_obj.has_next %}
+                <a href="?{{query_string}}&page={{ page_obj.next_page_number }}" class="btn btn-outline-sm">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>

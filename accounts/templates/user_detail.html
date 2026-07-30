@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Account Profile{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="detail-container">
+
+        <div class="page-header">
+            <div>
+                <h1>Account Profile</h1>
+                <p class="subtitle">Manage security credentials, unique identity properties, and contact channels</p>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-grid">
+                
+                <div class="detail-row">
+                    <span class="detail-label">Full Name</span>
+                    <span class="detail-value font-semibold">{{ user.name }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Email Address</span>
+                    <span class="detail-value text-muted" style="font-weight: 500;">{{ user.email }}</span>
+                </div>
+
+            </div>
+
+            <div class="detail-actions" style="margin-top: 2rem; justify-content: flex-start; gap: 1rem;">
+                <a href="{% url 'user_update' %}" class="btn btn-primary">
+                    Edit Name
+                </a>
+                
+                <a href="{% url 'email_update' %}" class="btn btn-secondary">
+                    Edit Email
+                </a>
+
+                <a href="{% url 'password_change' %}" class="btn btn-primary" style="margin-left: auto;  display: flex; align-items: center;">
+                    <i class="fas fa-lock"></i> Change Password
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+<div style="display: flex; flex-direction: column;">
+    {% for notification in notifications %}
+    <div class="notification-item" data-notification-id="{{ notification.pk }}" data-read="{% if notification.is_read %}true{% else %}false{% endif %}" style="
+        padding: 1.25rem 1.5rem; 
+        background-color: {% if not notification.is_read %}var(--accent-light){% else %}var(--sidebar-bg){% endif %}; 
+        border-bottom: 1px solid var(--sidebar-border); 
+        border-left: 4px solid {% if not notification.is_read %}var(--accent-color){% else %}transparent{% endif %};
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+        transition: all 0.15s ease;
+    ">
+        <div style="display: flex; flex-direction: column; gap: 0.35rem; flex-grow: 1;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <a href="{% url 'read' notification.pk %}" style="
+                    text-decoration: none; 
+                    font-size: 0.95rem; 
+                    font-weight: {% if not notification.is_read %}700{% else %}500{% endif %}; 
+                    color: var(--text-main);
+                ">
+                    {{ notification.title }}
+                </a>
+                {% if not notification.is_read %}
+                    <span style="
+                        display: inline-block; 
+                        width: 8px; 
+                        height: 8px; 
+                        background-color: var(--accent-color); 
+                        border-radius: 50%;
+                    "></span>
+                {% endif %}
+            </div>
+            
+            <p style="
+                margin: 0; 
+                font-size: 0.875rem; 
+                color: var(--text-muted); 
+                line-height: 1.45;
+            ">
+                {{ notification.message }}
+            </p>
+            
+            <small style="
+                font-size: 0.75rem; 
+                color: #94a3b8; 
+                font-weight: 500;
+            ">
+                {{ notification.created_at|timesince }} ago
+            </small>
+        </div>
+
+        <div class="action-cell-group" style="align-self: center;">
+            <form action="{% url 'delete' notification.pk %}" method="post" class="inline-delete-form">
+                {% csrf_token %}
+                <button type="submit" class="action-btn delete" title="Delete notification">
+                    <i style="font-style: normal; font-weight: 600; font-size: 0.85rem;">✕</i>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-wrapper">
+        <div class="empty-icon" style="font-size: 2.5rem;">🔔</div>
+        <h3>All quiet here</h3>
+        <p>You do not have any notification records.</p>
+    </div>
+    {% endfor %}
+</div>

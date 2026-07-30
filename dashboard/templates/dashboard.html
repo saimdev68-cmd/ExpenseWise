@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Financial Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <!-- HEADER SECTION -->
+    <div class="dashboard-header-row">
+        <div>
+            <h1 class="welcome-title">Welcome back, {{ request.user.first_name|default:"Muhammad" }}! 👋</h1>
+            <p class="welcome-subtitle">Here's what's happening with your finances today.</p>
+        </div>
+        <div class="date-badge-menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            {{ today|date:"F d, Y" }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 0.25rem;"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+    </div>
+
+    <!-- 4 CONTAINERS -->
+    <div class="exact-metrics-grid">
+        
+        <!-- Total Income -->
+        <div class="exact-metric-card">
+            <div class="metric-icon-wrapper" style="background-color: #f0f0fe;">
+                <!-- Wallet with plus icon custom styling -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#4f46e5" stroke="#4f46e5" stroke-width="1"><path d="M19 7h-12v14h12c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"/><path d="M5 7c0-1.1.9-2 2-2h10V3H7c2.2 0 4 1.8 4 4v10H5V7z"/><rect x="11" y="11" width="4" height="4" rx="1" fill="#ffffff" stroke="#ffffff"/></svg>
+            </div>
+            <div class="metric-info-layout">
+                <h3>Total Income</h3>
+                <p class="exact-value">${{ metrics.income.total|floatformat:2|intcomma }}</p>
+                <div class="trend-indicator trend-up">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 5v14"/></svg>
+                    {{ metrics.income.change }}% <span>from last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Expense -->
+        <div class="exact-metric-card">
+            <div class="metric-icon-wrapper" style="background-color: #fff0f3;">
+                <!-- Trending down business/expense visual arrow icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#ff4d6d" stroke="#ff4d6d" stroke-width="1"><circle cx="12" cy="12" r="10" fill="#fff0f3"/><path d="M17 14h-5v-5" stroke="#ff4d6d" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="m17 14-7-7-4 4" stroke="#ff4d6d" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="metric-info-layout">
+                <h3>Total Expense</h3>
+                <p class="exact-value">${{ metrics.expense.total|floatformat:2|intcomma }}</p>
+                <div class="trend-indicator trend-down">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 12-7 7-7-7"/><path d="M12 19V5"/></svg>
+                    {{ metrics.expense.change }}% <span>from last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Balance -->
+        <div class="exact-metric-card">
+            <div class="metric-icon-wrapper" style="background-color: #f0f0fe;">
+                <!-- Card / Wallet emblem with internal brand initial identifier style -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#4f46e5" stroke="#4f46e5" stroke-width="1"><rect width="20" height="14" x="2" y="5" rx="3"/><path d="M6 10h3v4H6z" fill="#ffffff" stroke="#ffffff"/></svg>
+            </div>
+            <div class="metric-info-layout">
+                <h3>Current Balance</h3>
+                <p class="exact-value">${{ metrics.balance.total|floatformat:2|intcomma }}</p>
+                <div class="trend-indicator trend-up">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 5v14"/></svg>
+                    {{ metrics.balance.change }}% <span>from last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Savings Rate -->
+        <div class="exact-metric-card">
+            <div class="metric-icon-wrapper" style="background-color: #f0f0fe;">
+                <!-- Growth trend-up multi-bar analytics dashboard icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            </div>
+            <div class="metric-info-layout">
+                <h3>Savings Rate</h3>
+                <p class="exact-value">{{ metrics.savings_rate.total }}%</p>
+                <div class="trend-indicator trend-up">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 5v14"/></svg>
+                    {{ metrics.savings_rate.change }}% <span>from last month</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Include Chart.js via CDN at the top of your block if it isn't in base.html -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="charts-double-layout">
+    <!-- LEFT PANEL: Income vs Expense -->
+    <div class="chart-container-card">
+        <div class="chart-card-header">
+            <h2>Income vs Expense</h2>
+            <select class="chart-filter-dropdown" data-target="left" onchange="updateDashboardCharts(this.value)">
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="last_30_days">Last 30 Days</option>
+                <option value="last_90_days">Last 90 Days</option>
+            </select>
+        </div>
+        <div class="canvas-box">
+            <canvas id="incomeExpenseChart"></canvas>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL: Expense Categories breakdown -->
+    <div class="chart-container-card">
+        <div class="chart-card-header">
+            <h2>Expense Categories</h2>
+            <select class="chart-filter-dropdown" data-target="right" onchange="updateDashboardCharts(this.value)">
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="last_30_days">Last 30 Days</option>
+                <option value="last_90_days">Last 90 Days</option>
+            </select>
+        </div>
+        <div class="donut-flex-wrapper">
+            <div class="canvas-donut-box">
+                <canvas id="expenseCategoryChart"></canvas>
+                <div class="donut-center-label">
+                    <span id="donutTotalAmount">$0.00</span>
+                    <label>Total</label>
+                </div>
+            </div>
+            <!-- Interactive Dynamic Legend Rows -->
+            <div class="donut-legend-list" id="donutLegendRows"></div>
+        </div>
+    </div>
+</div>
+<script src="{% static "js/dashboard.js" %}"></script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Budget{% else %}Add Budget{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="form-container">
+
+        <div class="page-header">
+            <div>
+                <h1>{% if form.instance.pk %}Edit Budget{% else %}Add Budget{% endif %}</h1>
+                <p class="subtitle">Establish or alter category funding benchmarks below</p>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form
+                method="post"
+                id="budget-form"
+                data-pk="{{ object.pk|default:'' }}"
+                novalidate
+            >
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <ul class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <div class="form-grid">
+                    {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+
+                        {{ field }}
+
+                        <span
+                            class="field-error-msg js-error"
+                            id="{{ field.name }}-error"
+                        ></span>
+
+                        {% if field.help_text %}
+                            <small class="form-help-text">
+                                {{ field.help_text }}
+                            </small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div
+                    class="form-error js-duplicate-error"
+                    id="duplicate-error"
+                ></div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        {% if object %}
+                            Edit Budget
+                        {% else %}
+                            Save Budget
+                        {% endif %}
+                    </button>
+
+                    <a href="{% url 'budget_list' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script src="{% static 'js/budget/budget_form.js' %}"></script>
+{% endblock %}

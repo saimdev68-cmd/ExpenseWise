@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block title %}
+Expenses
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+
+    <header class="page-header">
+        <div>
+            <h1>My Expenses</h1>
+            <p class="subtitle">Monitor and track your outflows seamlessly</p>
+        </div>
+        <div>
+            <a href="{% url 'expense_add' %}" class="btn btn-primary">
+                <i data-lucide="plus" class="icon-sm"></i> Add Expense
+            </a>
+        </div>
+    </header>
+    
+    <div class="filter-card">
+        <form method="get" id="filter-form" class="filter-form">
+            
+            <div class="filter-row">
+                <div class="input-group search-box">
+                    <label for="search">Search Transactions</label>
+                    <input type="search" name="search" id="search" value="{{ request.GET.search }}" placeholder="Search by title, category, or notes...">
+                </div>
+
+                <div class="input-group">
+                    <label for="category">Category</label>
+                    <select name="category" id="category">
+                        <option value="">All Categories</option>
+                        {% for value, label in categories %}
+                            <option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="payment_method">Payment Method</label>
+                    <select name="payment_method" id="payment_method">
+                        <option value="">All Methods</option>
+                        {% for value, label in payment_methods %}
+                            <option value="{{ value }}" {% if request.GET.payment_method == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="period">Quick Date Filter</label>
+                    <select name="period" id="period">
+                        <option value="">Custom Range</option>
+                        <option value="today" {% if request.GET.period == "today" %}selected{% endif %}>Today</option>
+                        <option value="yesterday" {% if request.GET.period == "yesterday" %}selected{% endif %}>Yesterday</option>
+                        <option value="last_7_days" {% if request.GET.period == "last_7_days" %}selected{% endif %}>Last 7 Days</option>
+                        <option value="this_month" {% if request.GET.period == "this_month" %}selected{% endif %}>This Month</option>
+                        <option value="last_month" {% if request.GET.period == "last_month" %}selected{% endif %}>Last Month</option>
+                        <option value="this_year" {% if request.GET.period == "this_year" %}selected{% endif %}>This Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-row advanced-row">
+                <div class="input-group">
+                    <label for="start_date">From Date</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ request.GET.start_date }}">
+                </div>
+
+                <div class="input-group">
+                    <label for="end_date">To Date</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ request.GET.end_date }}">
+                </div>
+
+                <div class="input-group">
+                    <label for="min_amount">Minimum Amount</label>
+                    <input type="number" name="min_amount" min="1" id="min_amount" step="1" placeholder="Rs 1" value="{{ request.GET.min_amount }}">
+                </div>
+
+                <div class="input-group">
+                    <label for="max_amount">Maximum Amount</label>
+                    <input type="number" name="max_amount" min="1" id="max_amount" step="1" placeholder="Rs 9,999" value="{{ request.GET.max_amount }}">
+                </div>
+
+                <div class="input-group">
+                    <label for="sort">Sort By</label>
+                    <select name="sort" id="sort">
+                        <option value="newest" {% if request.GET.sort == "newest" %}selected{% endif %}>Newest</option>
+                        <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Oldest</option>
+                        <option value="highest" {% if request.GET.sort == "highest" %}selected{% endif %}>Highest Amount</option>
+                        <option value="lowest" {% if request.GET.sort == "lowest" %}selected{% endif %}>Lowest Amount</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button type="button" id="reset-filters" class="btn btn-primary">
+                    Reset Filters
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id='expense-results'>
+        {% include "partials/expense_table.html" %}
+    </div>
+    
+
+</div>
+<script src="{% static "js/expense/expense.js" %}"></script>
+{% endblock %}

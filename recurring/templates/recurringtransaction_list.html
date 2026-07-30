@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Recurring Transactions
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+
+    <header class="page-header">
+        <div>
+            <h1>Recurring Transactions</h1>
+            <p class="subtitle">Manage automated subscriptions, periodic invoices, and regular scheduled cashflows</p>
+        </div>
+        <div>
+            <a href="{% url 'recurring_add' %}" class="btn btn-primary">
+                <i data-lucide="plus" class='icon-sm'></i> Add Recurring Transaction
+            </a>
+        </div>
+    </header>
+
+    <!-- Filter Panel -->
+    <div class="filter-card">
+        <form method="get" id="filter-form" class="filter-form">
+            <div class="filter-row">
+                
+                <div class="input-group">
+                    <label for="type">Transaction Type</label>
+                    <select name="type" id="type" >
+                        <option value="">All Types</option>
+                        {% for value, label in transaction_types %}
+                            <option value="{{ value }}" {% if value == selected_type %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="frequency">Frequency</label>
+                    <select name="frequency" id="frequency">
+                        <option value="">All Frequencies</option>
+                        {% for value, label in frequencies %}
+                            <option value="{{ value }}" {% if value == selected_frequency %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="status">Status</label>
+                    <select name="status" id="status">
+                        <option value="">All Statuses</option>
+                        <option value="active" {% if selected_status == "active" %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if selected_status == "inactive" %}selected{% endif %}>Inactive</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="filter-actions">
+                <button type="button" id="reset-filters" class="btn btn-primary">Reset Filters</button>
+            </div>
+        </form>
+    </div>
+
+    {% include "partials/recurringtransaction_table.html" %}
+    
+
+</div>
+<script src="{% static "js/recurring/recurring.js" %}"></script>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block title %}
+Budgets
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+
+    <header class="page-header">
+        <div>
+            <h1>Budget Dashboard</h1>
+            <p class="subtitle">Set allocations, tracking parameters, and check thresholds</p>
+        </div>
+        <div>
+            <a href="{% url 'budget_add' %}" class="btn btn-primary">
+                <i data-lucide="plus" class="icon-sm"></i> Add Budget
+            </a>
+        </div>
+    </header>
+    
+    <div class="overview-grid">
+        <div class="main-metric-card core-balance">
+            <h3>Total Budget</h3>
+            <div class="value" style="color:#4f46e5;">Rs {{ total_budget|intcomma }}</div>
+        </div>
+        <div class="main-metric-card core-expense">
+            <h3>Total Spent</h3>
+            <div class="value text-danger">Rs {{ total_spent|floatformat:"0"|intcomma }}</div>
+        </div>
+        <div class="main-metric-card core-income">
+            <h3>Total Remaining</h3>
+            <div class="value positive" style="color:#10b981">Rs {{ total_remaining|floatformat:"0"|intcomma }}</div>
+        </div>
+    </div>
+
+    <div class="filter-card">
+        <form method="get" class="filter-form" id="filter-form">
+            <div class="filter-row">
+                <div class="input-group">
+                    <label>Category</label>
+                    <select name="category" id="category">
+                        <option value="">All Categories</option>
+                        {% for value, label in categories %}
+                            <option value="{{ value }}" {% if value == request.GET.get.category %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Month</label>
+                    <select name="month" id="month">
+                        <option value="">All Months</option>
+                        {% for value, label in months %}
+                            <option value="{{ value }}" {% if value|stringformat:"s" == request.GET.get.month %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Year</label>
+                    <select name="year" id="year">
+                        <option value="" {% if not request.GET.get.year %}selected{% endif %}>
+                            All Years
+                        </option>
+                        {% for year in years %}
+                            <option value="{{ year }}"
+                                {% if year == request.GET.get.year %}selected{% endif %}>
+                                {{ year }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Sort By</label>
+                    <select name="sort" id="sort">
+                        <option value="newest" {% if request.GET.get.sort == "newest" %}selected{% endif %}>Newest</option>
+                        <option value="oldest" {% if request.GET.get.sort == "oldest" %}selected{% endif %}>Oldest</option>
+                        <option value="highest" {% if request.GET.get.sort == "highest" %}selected{% endif %}>Highest Budget</option>
+                        <option value="lowest" {% if request.GET.get.sort == "lowest" %}selected{% endif %}>Lowest Budget</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button id="reset-filters" class="btn btn-primary">Clear Filters</button>
+            </div>
+        </form>
+    </div>
+    {% include "partials/budget_table.html" %}
+</div>
+<script src="{% static "js/budget/budgets.js" %}"></script>
+{% endblock %}

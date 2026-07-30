@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Notifications
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    
+    <div class="page-header">
+        <div>
+            <h1>Notifications</h1>
+            <p class="subtitle">Track system alerts, automated triggers, and account activities</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            {% if notifications %}
+            <button id="markAllReadBtn" class="btn btn-primary">
+                <i data-lucide="check" class="icon-sm"></i> Mark All As Read
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="table-card" id="notification-results">
+        {% include "partials/notification_list.html" %}
+    </div>
+
+</div>
+<script>
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+</script>
+<script src="{% static "js/notifications/notification.js" %}"></script>
+{% endblock %}

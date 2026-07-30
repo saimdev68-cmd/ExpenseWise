@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Recurring Transaction{% else %}Add Recurring Transaction{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="form-container">
+        
+        <div class="page-header">
+            <div>
+                <h1>{% if form.instance.pk %}Edit Recurring Transaction{% else %}Add Recurring Transaction{% endif %}</h1>
+                <p class="subtitle">Establish recurring lifecycle properties for automated ledger runs</p>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form method="post" id="recurring-form" novalidate>
+                {% csrf_token %}
+
+                <!-- Non-field errors will be inserted here by JavaScript -->
+                <div id="non-field-errors"></div>
+
+                <div class="form-grid">
+                    {% for field in form %}
+                    <div class="form-group {% if field.name == 'is_active' %}is-checkbox{% endif %}" 
+                        {% if field.name == "income_category" %}
+                            id="income-category-row"
+                        {% elif field.name == "expense_category" %}
+                            id="expense-category-row"
+                        {% elif field.name == "payment_method" %}
+                            id="payment-method-row"
+                        {% endif %}
+                    >
+                        {% if field.name == 'is_active' %}
+                            <!-- For checkboxes, place the input first, then the label next to it -->
+                            {{ field }}
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% else %}
+                            <!-- Default rendering for text, numbers, and dates -->
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            <!-- Error messages will be inserted here by JavaScript -->
+                        {% endif %}
+                        
+                        {% if field.help_text %}
+                            <small class="form-help-text">{{ field.help_text }}</small>
+                        {% endif %}
+                        
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <span class="field-error-msg" style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ error }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        {% if form.instance.pk %}Edit Transaction{% else %}Save Transaction{% endif %}
+                    </button>
+                    <a href="{% url 'recurring_list' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<script src="{% static 'js/recurring/recurring_form.js' %}"></script>
+{% endblock %}

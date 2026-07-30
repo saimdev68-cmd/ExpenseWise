@@ -1,0 +1,38 @@
+from django.urls import path
+from .views import (
+    SignUpView ,
+    OtpVerifyView,
+    LoginView,
+    LogoutView,
+    ResendOtpView,
+    PasswordresetView,
+    PasswordresetdoneView,
+    PasswordresetconfirmView,
+    PasswordresetCompleteView,
+    EmailUpdateView , 
+    EmailOtpVerifyView,
+    EmailResendOtpView,
+    PasswordchangeView,
+    PasswordchangeDoneView,
+    UserDetailView,
+    UserUpdateView,
+)
+
+urlpatterns = [
+    path("signup/",SignUpView.as_view(),name="signup"),
+    path("otp-verify/",OtpVerifyView.as_view(),name="otp_verify"),
+    path("login/",LoginView.as_view(),name="login"),
+    path("logout/",LogoutView.as_view(),name="logout"),
+    path("resend-otp/",ResendOtpView.as_view(),name="resend_otp"),
+    path("password-reset/",PasswordresetView.as_view(),name="password_reset"),
+    path("password-reset/done/",PasswordresetdoneView.as_view(),name="password_reset_done"),
+    path('reset/<uidb64>/<token>/',PasswordresetconfirmView.as_view(),name='password_reset_confirm'),
+    path("reset/done/",PasswordresetCompleteView.as_view(),name="password_reset_complete"),
+    path("email-update/",EmailUpdateView.as_view(),name="email_update"),
+    path("email/otp-verify/",EmailOtpVerifyView.as_view(),name="email_otp_verify"),
+    path("email/resend-otp/",EmailResendOtpView.as_view(),name="email_resend_otp"),
+    path("password/change/",PasswordchangeView.as_view(),name="password_change"),
+    path('password/change/done/',PasswordchangeDoneView.as_view(),name="password_change_done"),
+    path("user_detail/",UserDetailView.as_view(),name="user_detail"),
+    path("user_update/",UserUpdateView.as_view(),name="user_update"),
+]

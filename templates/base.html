@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpenseWise</title>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static "css/styles.css" %}">
+</head>
+<body>
+
+    <!-- Modern Sidebar Layout (Keeps state between page reloads) -->
+    <aside id="sidebar">
+        <div class="logo-container" id="sidebarToggle" style="cursor: pointer;">
+            <i data-lucide="wallet" class="logo-icon"></i>
+            <span class="logo-text">ExpenseWise</span>
+        </div>
+
+        <nav>
+            <ul id="sidebarMenu">
+                <li><a href="{% url "dashboard" %}" data-spa><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a></li>
+                <li><a href="{% url "income_list" %}" data-spa><i data-lucide="trending-up"></i><span>Income</span></a></li>
+                <li><a href="{% url "expense_list" %}" data-spa><i data-lucide="trending-down"></i><span>Expenses</span></a></li>
+                <li><a href="{% url "budget_list" %}" data-spa><i data-lucide="pie-chart"></i><span>Budgets</span></a></li>
+                <li><a href="{% url "recurring_list" %}" data-spa><i data-lucide="refresh-cw"></i><span>Recurring</span></a></li>
+                <li>
+                    <a href="{% url 'list' %}" data-spa>
+                        <i data-lucide="bell"></i>
+                        <span>Notifications</span>
+                        {% if unread_notification_count %}
+                            <span class="badge">{{ unread_notification_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                
+                <li class="menu-divider"><span>Reports</span></li>
+                <li><a href="{% url "monthly_report" %}" data-spa><i data-lucide="calendar-days"></i><span>Monthly Report</span></a></li>
+                <li><a href="{% url "yearly_report" %}" data-spa><i data-lucide="calendar-range"></i><span>Yearly Report</span></a></li>
+                <li><a href="{% url "custom_report" %}" data-spa><i data-lucide="sliders"></i><span>Custom Report</span></a></li>
+                
+                <li class="menu-divider"><span>Account</span></li>
+                <li><a href="{% url "user_detail" %}" data-spa><i data-lucide="settings"></i><span>Settings</span></a></li>
+                <li class="logout-item">
+                    <form action="{% url "logout" %}" method="post" id="logoutForm">
+                        {% csrf_token %}
+                        <button type="submit">
+                            <i data-lucide="log-out"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Messages Container -->
+    <div id="toast-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="toast {{ message.tags }}">
+                    <i data-lucide="info" class="toast-icon"></i>
+                    <p class="toast-message">{{ message }}</p>
+                    <button class="toast-close"><i data-lucide="x"></i></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-content" id="mainContent">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Immediate script execution to prevent layout flickering on page reload
+        (function() {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                document.getElementById('sidebar').classList.add('collapsed');
+                document.getElementById('mainContent').classList.add('expanded');
+            }
+        })();
+    </script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Profile Name{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="form-container">
+        
+        <div class="page-header">
+            <div>
+                <h1>Edit Profile Name</h1>
+                <p class="subtitle">Modify the display identity credentials linked to your user account</p>
+            </div>
+            <a href="{% url 'user_detail' %}" class="btn btn-primary">
+                <i data-lucide="arrow-left" class="icon-sm"></i> Back to Profile
+            </a>
+        </div>
+
+        <div class="form-card">
+            <!-- Added id="ajax-form" -->
+            <form id="ajax-form" method="post" novalidate>
+                {% csrf_token %}
+
+                <!-- General non-field error container -->
+                <ul class="form-errors" id="non-field-errors" style="display: none;"></ul>
+
+                <div class="form-grid">
+                    {% for field in form %}
+                    <div class="form-group" data-field="{{ field.name }}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        
+                        {{ field }}
+                        
+                        {% if field.help_text %}
+                            <small class="form-help-text">{{ field.help_text }}</small>
+                        {% endif %}
+                        
+                        <!-- Error container per field -->
+                        <div class="field-errors-container">
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <span class="field-error-msg">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submit-btn" class="btn btn-primary">
+                        Edit Name
+                    </button>
+                    <a href="{% url 'user_detail' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script src="{% static "js/accounts/user_update.js" %}"></script>
+{% endblock %}

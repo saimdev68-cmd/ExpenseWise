@@ -1,0 +1,112 @@
+# ==========================
+# Python
+# ==========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# ==========================
+# Virtual Environment
+# ==========================
+venv/
+env/
+.venv/
+ENV/
+
+# ==========================
+# Environment Variables
+# ==========================
+.env
+.env.*
+*.env
+
+# ==========================
+# Django
+# ==========================
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Media uploads
+media/
+
+# Collected static files
+staticfiles/
+
+# ==========================
+# Migrations (Optional)
+# Uncomment if you DON'T want to track migrations
+# ==========================
+# **/migrations/
+# !**/migrations/__init__.py
+
+# ==========================
+# Pytest
+# ==========================
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+.coverage.*
+
+# ==========================
+# Type Checkers
+# ==========================
+.mypy_cache/
+.pyre/
+.pytype/
+
+# ==========================
+# Linting
+# ==========================
+.ruff_cache/
+
+# ==========================
+# Jupyter
+# ==========================
+.ipynb_checkpoints/
+
+# ==========================
+# VS Code
+# ==========================
+.vscode/
+
+# ==========================
+# PyCharm
+# ==========================
+.idea/
+
+# ==========================
+# macOS
+# ==========================
+.DS_Store
+
+# ==========================
+# Windows
+# ==========================
+Thumbs.db
+Desktop.ini
+
+# ==========================
+# Build / Distribution
+# ==========================
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ==========================
+# Cache
+# ==========================
+.cache/
+
+# ==========================
+# Node.js (if using React/Vite)
+# ==========================
+node_modules/
+npm-debug.log*
+yarn-error.log*

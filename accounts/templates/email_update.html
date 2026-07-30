@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Update Email Address{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="form-container">
+        
+        <div class="page-header">
+            <div>
+                <h1>Edit Email Address</h1>
+                <p class="subtitle">Modify the contact email channel linked to your user account</p>
+            </div>
+            <a href="{% url 'user_detail' %}" class="btn btn-primary">
+                <i data-lucide="arrow-left" class="icon-sm"></i> Back to Profile
+            </a>
+        </div>
+
+        <div class="form-card">
+            <!-- Added id="ajax-form" -->
+            <form id="ajax-form" method="post" novalidate>
+                {% csrf_token %}
+
+                <!-- Non-field errors -->
+                <ul class="form-errors" id="non-field-errors" style="display: none;"></ul>
+
+                <div class="form-grid">
+                    {% for field in form %}
+                    <div class="form-group" data-field="{{ field.name }}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        
+                        {{ field }}
+                        
+                        {% if field.help_text %}
+                            <small class="form-help-text">{{ field.help_text }}</small>
+                        {% endif %}
+                        
+                        <!-- Field error container -->
+                        <div class="field-errors-container">
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <span class="field-error-msg">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submit-btn" class="btn btn-primary">
+                        Edit Email
+                    </button>
+                    <a href="{% url 'user_detail' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<!-- AJAX Submission Script -->
+<script src="{% static "js/accounts/email_update.js" %}"></script>
+{% endblock %}

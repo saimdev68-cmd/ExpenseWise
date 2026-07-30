@@ -1,0 +1,206 @@
+
+:root {
+    --auth-bg: #f8fafc;
+    --auth-card-bg: #ffffff;
+    --auth-text-main: #0f172a;
+    --auth-text-muted: #64748b;
+    --auth-accent: #4f46e5;
+    --auth-accent-hover: #3b32c3;
+    --auth-border: #e2e8f0;
+    --auth-error: #ef4444;
+    --auth-success: #10b981;
+    --auth-radius: 0.75rem;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--auth-bg);
+    color: var(--auth-text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+/* Flash Message Stack Layout */
+.msg-toast-stack {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.msg-toast {
+    padding: 1rem 1.25rem;
+    background: #ffffff;
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--auth-accent);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    font-size: 0.875rem;
+    font-weight: 500;
+    animation: slideDown 0.2s ease-out;
+}
+
+.msg-toast.error { border-left-color: var(--auth-error); }
+.msg-toast.success { border-left-color: var(--auth-success); }
+
+/* Auth Canvas Architecture */
+.auth-container {
+    width: 100%;
+    max-width: 440px;
+}
+
+.auth-card {
+    background: var(--auth-card-bg);
+    border: 1px solid var(--auth-border);
+    border-radius: var(--auth-radius);
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--auth-text-main);
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    font-size: 0.875rem;
+    color: var(--auth-text-muted);
+}
+
+/* Form Rendering System overrides */
+.auth-form p {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.auth-form label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--auth-text-main);
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 0.65rem 0.875rem;
+    font-size: 0.95rem;
+    border: 1px solid var(--auth-border);
+    border-radius: 0.5rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+    background: #ffffff;
+}
+
+.auth-form input:focus {
+    border-color: var(--auth-accent);
+}
+
+.auth-form ul.errorlist {
+    list-style: none;
+    color: var(--auth-error);
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+.auth-form .non-field-errors {
+    background: #fef2f2;
+    border: 1px solid #fde2e2;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: var(--auth-error);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    list-style: none;
+}
+
+/* Absolute Password Frame Wrapper */
+.password-field-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-toggle-hook {
+    position: absolute;
+    right: 0.875rem;
+    cursor: pointer;
+    color: var(--auth-text-muted);
+    font-size: 1.05rem;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Buttons & Footer Options */
+.auth-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--auth-accent);
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    margin-top: 0.5rem;
+}
+
+.auth-btn:hover {
+    background: var(--auth-accent-hover);
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.auth-footer a {
+    font-size: 0.875rem;
+    color: var(--auth-accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.form-help-text {
+    font-size: 0.775rem;
+    color: var(--auth-text-muted);
+    line-height: 1.4;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-1rem); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

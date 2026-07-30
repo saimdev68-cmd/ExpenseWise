@@ -1,0 +1,74 @@
+<div>
+
+
+<a href="{% url 'notifications:list' %}">
+
+🔔
+
+{% if unread_notification_count %}
+
+{{ unread_notification_count }}
+
+{% endif %}
+
+
+</a>
+
+
+
+<div>
+
+
+{% for notification in latest_notifications %}
+
+
+<div>
+
+
+<a href="{% url 'notifications:read' notification.pk %}">
+
+
+<strong>
+
+{{ notification.title }}
+
+</strong>
+
+
+<br>
+
+
+{{ notification.created_at|timesince }}
+ago
+
+
+</a>
+
+
+</div>
+
+
+<hr>
+
+
+{% empty %}
+
+
+<p>
+No notifications
+</p>
+
+
+{% endfor %}
+
+
+
+<a href="{% url 'notifications:list' %}">
+View all
+</a>
+
+
+</div>
+
+
+</div>

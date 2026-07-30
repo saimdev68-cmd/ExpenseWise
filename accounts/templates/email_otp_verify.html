@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Verify Email Address {% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="form-container">
+        
+        <div class="page-header">
+            <div>
+                <h1>Verify Email Address</h1>
+                <p class="subtitle">Enter the security verification code dispatched to your new inbox address</p>
+            </div>
+            <a href="{% url 'user_detail' %}" class="btn btn-primary">
+                <i data-lucide="arrow-left" class="icon-sm"></i> Back to Profile
+            </a>
+        </div>
+
+        <div class="form-card">
+            <!-- Added id="ajax-form" -->
+            <form id="ajax-form" method="post" novalidate style="margin-bottom: 1.5rem;">
+                {% csrf_token %}
+
+                <!-- Non-field error container -->
+                <ul class="form-errors" id="non-field-errors" {% if not form.non_field_errors %}style="display: none;"{% endif %}>
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+
+                <div class="form-grid">
+                    {% for field in form %}
+                    <div class="form-group" data-field="{{ field.name }}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        
+                        {{ field }}
+                        
+                        {% if field.help_text %}
+                            <small class="form-help-text">{{ field.help_text }}</small>
+                        {% endif %}
+                        
+                        <!-- Field error container -->
+                        <div class="field-errors-container">
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <span class="field-error-msg">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-actions" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+                    <button type="submit" id="submit-btn" class="btn btn-primary">
+                        Verify Code
+                    </button>
+                    <a href="{% url 'user_detail' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+
+            <hr style="border: 0; border-top: 1px solid var(--sidebar-border); margin: 1.5rem 0;">
+
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                <span class="text-muted" style="font-size: 0.875rem;">Didn't receive the verification transmission code?</span>
+                
+                <!-- Added id="resend-form" -->
+                <form id="resend-form" action="{% url 'email_resend_otp' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" id="resend-btn" class="btn btn-outline-sm" style="min-height: 36px; padding: 0.5rem 1rem;">
+                        🔄 Resend OTP
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{% static "js/accounts/email_otp_verification.js" %}"></script>
+{% endblock %}

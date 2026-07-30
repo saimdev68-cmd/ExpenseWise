@@ -1,0 +1,110 @@
+{% load humanize %}
+
+<section class="table-card">
+    <div class="table-responsive">
+        <table class="saas-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Payment Method</th>
+                    <th class="text-right">Amount</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td class="text-muted font-medium">{{ expense.date }}</td>
+                    <td class="text-muted font-medium">{{ expense.title }}</td>
+                    <td><span class="badge-category badge-{{ expense.category|lower }}">{{ expense.get_category_display }}</span></td>
+                    <td><span class="badge-category badge-pm-{{ expense.payment_method|lower }}">{{ expense.get_payment_method_display }}</span></td>
+                    <td class="text-right font-semibold text-danger">Rs {{ expense.amount|floatformat:"0"|intcomma }}</td>
+                    <td class="text-right">
+                        <div class="action-cell-group">
+                            <a href="{{ expense.get_absolute_url }}" class="action-btn detail" title="View">
+                                <i style="color: #4f46e5;" data-lucide="eye"></i>
+                            </a>
+                            <a href="{% url 'expense_edit' expense.pk %}" class="action-btn edit" title="Edit">
+                                <i style="color:#d97706;" data-lucide="edit-2"></i>
+                            </a>
+                            <form action="{% url 'expense_delete' expense.pk %}" method="post" class="inline-delete-form">
+                                {% csrf_token %}
+                                <button type="submit" class="action-btn delete" title="Delete">
+                                    <i style="color:#ef4444;" data-lucide="trash-2"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-state-cell">
+                        <div class="empty-wrapper">
+                            <i data-lucide="credit-card" class="empty-icon"></i>
+                            <h3>No expense records found</h3>
+                            <p>Try clearing your filters or create your first record to begin tracking.</p>
+                            <a href="{% url 'expense_add' %}" class="btn btn-primary btn-sm">Create first entry</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            {% if expenses %}
+            <tfoot>
+                <tr class="total-row">
+                    <!-- Span first 4 columns (Date, Title, Category, Payment Method) -->
+                    <td colspan="4" class="total-label">
+                        <strong>TOTAL EXPENSE</strong>
+                    </td>
+                    <!-- Amount column with right alignment -->
+                    <td class="text-right total-amount font-semibold text-danger">
+                        RS {{ total_amount|floatformat:"0"|intcomma }}
+                    </td>
+                    <!-- Empty cell for Actions column -->
+                    <td></td>
+                </tr>
+            </tfoot>
+            {% endif %}
+        </table>
+    </div>
+</section>
+
+{% if is_paginated %}
+<div class="pagination-container">
+    <div class="pagination-info">
+        Page <span class="font-semibold text-main">{{ page_obj.number }}</span> of {{ page_obj.paginator.num_pages }}
+    </div>
+    <div class="pagination-buttons">
+        {% if page_obj.has_previous %}
+            <a href="?{{query_string}}&page={{ page_obj.previous_page_number }}" class="btn btn-outline-sm">Previous</a>
+        {% endif %}
+        {% if page_obj.number > 3 %}
+        <a href="?{{query_string}}&page=1" class="btn btn-outline-sm">1</a>
+            {% if page_obj.number > 4 %}
+            <span>...</span>
+            {% endif %}
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                {% if page_obj.number == num %}
+                    <span class="btn btn-primary">{{ num }}</span>
+                {% else %}
+                    <a href="?{{query_string}}&page={{ num }}" class="btn btn-outline-sm">{{ num }}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.number < page_obj.paginator.num_pages|add:"-2" %}
+            {% if page_obj.number < page_obj.paginator.num_pages|add:"-3" %}
+            <span>...</span>
+            {% endif %}
+            <a href="?{{query_string}}&page={{page_obj.paginator.num_pages}}" class="btn btn-outline-sm">{{page_obj.paginator.num_pages}}</a>
+        {% endif %}
+        
+        {% if page_obj.has_next %}
+            <a href="?{{query_string}}&page={{ page_obj.next_page_number }}" class="btn btn-outline-sm">Next</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
