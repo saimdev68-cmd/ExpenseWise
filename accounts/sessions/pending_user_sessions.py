@@ -1,6 +1,8 @@
 
 class PendingUserSession:
-
+    """
+    Pending User Session.
+    """
     KEY = "pending_user_id"
 
     @classmethod

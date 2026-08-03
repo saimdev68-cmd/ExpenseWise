@@ -149,3 +149,24 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.reload(); // Simple fallback for history back/forward state changes
     });
 });
+
+// --- 4. MOBILE SIDEBAR TOGGLE ---
+const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+
+if (mobileMenuToggle && sidebar) {
+    // Toggle menu open/close on button click
+    mobileMenuToggle.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent the click from immediately triggering the document listener
+        sidebar.classList.toggle("mobile-open");
+    });
+
+    // Close sidebar when clicking outside of it on mobile devices
+    document.addEventListener("click", (e) => {
+        if (window.innerWidth <= 768 && 
+            sidebar.classList.contains("mobile-open") && 
+            !sidebar.contains(e.target)) {
+            
+            sidebar.classList.remove("mobile-open");
+        }
+    });
+}

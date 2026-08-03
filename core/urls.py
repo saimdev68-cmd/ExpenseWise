@@ -20,7 +20,7 @@ from dashboard.views import ChartDataAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("dashboard/",include("dashboard.urls")),
+    path("",include("dashboard.urls")),
     path("accounts/",include("accounts.urls")),
     path('income/',include('income.urls')),
     path("expense/",include("expense.urls")),
@@ -28,6 +28,6 @@ urlpatterns = [
     path("budgets/", include("budgets.urls")),
     path("recurring/", include("recurring.urls")),
     path("notifications/",include("notifications.urls")),
-    path("__debug__/",include("debug_toolbar.urls")),
+    # path("__debug__/",include("debug_toolbar.urls")),
     path('api/chart-data/', ChartDataAPIView.as_view(), name='chart_data_api')
 ]

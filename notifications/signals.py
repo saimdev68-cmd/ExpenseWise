@@ -5,7 +5,10 @@ from budgets.models import Budget
 
 from income.models import Income
 from django.urls import reverse
-from django.db import models
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
+from django.db.models import DecimalField
+from decimal import Decimal
 
 from .models import Notification
 
@@ -30,9 +33,7 @@ def check_budget_exceeded(sender,instance,created,**kwargs):
     month=instance.date.month,
     year=instance.date.year)
     for budget in budgets:
-        total_spent = sender.objects.filter(user=instance.user,category=instance.category).aggregate(
-        total=models.Sum("amount"))["total"] or 0
-        if total_spent > budget.amount:
+        if budget.spent > budget.amount:
             create_notification(
                 user=instance.user,
                 title="Budget Exceeded",

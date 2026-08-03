@@ -14,6 +14,9 @@ from .models import Expense
 
 
 class ExpenseListView(ExpenseQuerysetMixin, ListView):
+    """
+    User Expense List.
+    """
     template_name = "expense_list.html"
     context_object_name = "expenses"
     paginate_by = 10
@@ -43,33 +46,40 @@ class ExpenseListView(ExpenseQuerysetMixin, ListView):
     
 
 class ExpenseCreateView(LoginRequiredMixin, ExpenseFormMixin,SuccessMessageMixin,CreateView):
+    """
+    Create New Expense.
+    """
     success_url = reverse_lazy("expense_list")
     success_message = "Expense added successfully."
 
 
 class ExpenseDetailView(ExpenseQuerysetMixin, DetailView):
+    """
+    View Expense Detail.
+    """
     template_name = "expense_detail.html"
     context_object_name = "expense"
 
 
 class ExpenseUpdateView(ExpenseQuerysetMixin, ExpenseFormMixin,SuccessMessageMixin,UpdateView):
+    """
+    Edit Expense .
+    """
     success_url = reverse_lazy("expense_list")
     success_message = "Expense updated successfully."
 
 
 class ExpenseDeleteView(ExpenseQuerysetMixin, DeleteView):
+    """
+    Delete Expense.
+    """
     success_url = reverse_lazy("expense_list")
 
     def post(self, request, *args, **kwargs):
-        # Delete the object
         self.get_object().delete()
-        
-        # Get filtered queryset with all applied filters
-        # Use your filter_expense function (similar to filter_income)
         queryset = expense_filter(self.get_queryset(), request.GET)
         
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            # Get pagination parameters
             per_page = request.GET.get('per_page', 10)
             try:
                 per_page = int(per_page)

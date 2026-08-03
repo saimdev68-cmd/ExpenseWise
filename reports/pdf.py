@@ -53,7 +53,7 @@ def make_badge(text, color_map):
         fontName='Helvetica-Bold',
         fontSize=8,
         leading=10,
-        alignment=1, # Centered
+        alignment=1,
         textColor=colors.HexColor(theme["text"])
     )
     

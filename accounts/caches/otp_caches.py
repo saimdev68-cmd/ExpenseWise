@@ -1,6 +1,6 @@
-from django.core.cache import cache
 import time
 from typing import Optional
+from django.core.cache import cache
 
 
 class OTPCache:
@@ -21,16 +21,11 @@ class OTPCache:
     # ==========================================================================
 
     OTP_EXPIRATION_SECONDS = 600
-
     OTP_REQUEST_COOLDOWN_SECONDS = 60
-
     IP_OTP_WINDOW_SECONDS = 600
     MAX_OTP_REQUESTS_PER_IP = 10
-
     MAX_OTP_VERIFICATION_ATTEMPTS = 3
     OTP_VERIFICATION_BLOCK_SECONDS = 120
-
-    LOGIN_IP_BLOCK_SECONDS = 600
 
     # ==========================================================================
     # CACHE KEY BUILDERS
@@ -246,17 +241,10 @@ class OTPCache:
         )
 
     @classmethod
-    def get_remaining_otp_verification_block_seconds(
-        cls,
-        ip: str,
-        email: str
-    ) -> int:
-
+    def get_remaining_otp_verification_block_seconds(cls,ip: str,email: str) -> int:
         expires_at = cls.retrieve_otp_verification_block(ip, email)
-
         if expires_at is None:
             return 0
-
         return max(int(expires_at - time.time()), 0)
 
     @classmethod
@@ -270,12 +258,7 @@ class OTPCache:
     # ==========================================================================
 
     @classmethod
-    def clear_user_otp_cache(
-        cls,
-        ip: str,
-        email: str,
-        purpose: str
-    ) -> None:
+    def clear_user_otp_cache(cls,ip: str,email: str,purpose: str) -> None:
         cls.remove_otp(email, purpose)
         cls.remove_otp_cooldown(ip, email)
         cls.remove_otp_verification_attempts(ip, email)

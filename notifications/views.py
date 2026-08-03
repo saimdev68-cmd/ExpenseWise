@@ -1,14 +1,18 @@
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.template.loader import render_to_string
+
 from django.shortcuts import redirect
 from django.http import JsonResponse
-from django.template.loader import render_to_string
+from django.urls import reverse_lazy
+from django.contrib import messages
 
 from .models import Notification
 
 class NotificationListView(LoginRequiredMixin, ListView):
+    """
+    User Notification List.
+    """
     model = Notification
     template_name = "notification_list.html"
     context_object_name = "notifications"
@@ -27,6 +31,9 @@ class NotificationListView(LoginRequiredMixin, ListView):
         return super().render_to_response(context, **response_kwargs)
 
 class NotificationDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Delete Notification.
+    """
     model = Notification
     success_url = reverse_lazy("list")
 
@@ -38,7 +45,6 @@ class NotificationDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
         
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            # Get filtered queryset
             queryset = self.get_queryset()
             
             return JsonResponse({
@@ -51,6 +57,9 @@ class NotificationDeleteView(LoginRequiredMixin, DeleteView):
         return redirect(self.success_url)
 
 class MarkNotificationReadView(LoginRequiredMixin, View):
+    """
+    Mark As Read Notification.
+    """
     def get(self, request, pk):
         notification = Notification.objects.filter(user=request.user, pk=pk).first()
         if notification:
@@ -62,18 +71,15 @@ class MarkNotificationReadView(LoginRequiredMixin, View):
         return redirect("list")
 
 class MarkAllNotificationsReadView(LoginRequiredMixin, View):
+    """
+    Mark All Notification As Read.
+    """
     def get(self, request):
-        # Get count of unread notifications before marking as read
         unread_count = Notification.objects.filter(user=request.user, is_read=False).count()
-        
-        # Mark all as read
         updated_count = Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
         
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            # Get updated queryset
             queryset = Notification.objects.filter(user=request.user).order_by('-created_at')
-            
-            # Render the updated list
             context = {
                 'notifications': queryset,
             }

@@ -1,12 +1,15 @@
 from accounts.models import User
-from .otp_services import OTPService
-from django.db import transaction, IntegrityError
-from .service_result import ServiceResult
 from accounts.caches.otp_caches import OTPCache
+from django.db import transaction, IntegrityError
+
+from .otp_services import OTPService
+from .service_result import ServiceResult
 
 
 class RegisterService:
-
+    """
+    Register Service
+    """
     @staticmethod
     def register_user(data,purpose,ip):
         email = data.get("email")
@@ -57,10 +60,12 @@ class RegisterService:
                     name=name,
                     is_active=False,
                 )
-            OTPService.send_otp(user.email, purpose,ip)
+                transaction.on_commit(
+                    lambda: OTPService.send_otp(user.email, purpose, ip)
+                )
             return ServiceResult(
                 success = True,
-                message = f"An OTP is send to {email}" ,
+                message = f"An OTP has been sent to {email}" ,
                 user = user
             )
         except IntegrityError:

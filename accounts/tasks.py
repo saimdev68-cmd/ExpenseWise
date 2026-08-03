@@ -1,36 +1,21 @@
 from celery import shared_task
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 
-@shared_task
-def send_password_reset_mail(subject,message,from_email,recipient_list):
-    send_mail(
+
+@shared_task(bind=True,autoretry_for=(Exception,),retry_backoff=True,max_retries=3,)
+def send_email_task(self,subject: str,text_message: str,html_message: str,recipient: str,) -> str:
+    """
+    Send an email asynchronously using Celery.
+    """
+    email = EmailMultiAlternatives(
         subject=subject,
-        message=message,
-        from_email=from_email,
-        recipient_list=recipient_list,
-        fail_silently=False
-    )
-    return f"Password reset email is send to {recipient_list}"
-
-@shared_task
-def send_otp_mail(subject,message,email):
-    send_mail(
-        subject=subject,
-        message=message,
+        body=text_message,
         from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[email],
-        fail_silently=False
+        to=[recipient],
     )
-    return f"An otp email is send to {email}"
 
-@shared_task
-def send_email_otp_mail(email,otp):
-    send_mail(
-        subject="Otp For Email Verification",
-        message=f"Your Otp for email verification is {otp}",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[email],
-        fail_silently=False
-    )
-    return f"An email verification otp email is send to {email}"
+    email.attach_alternative(html_message, "text/html")
+    email.send(fail_silently=False)
+
+    return f"Email sent to {recipient}"

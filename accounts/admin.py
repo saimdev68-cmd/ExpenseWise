@@ -4,17 +4,21 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, PendingEmail
 
 
-class PendingEmailInline(admin.StackedInline):
+class PendingEmailInline(admin.TabularInline):
+    """
+    Pending Email Inline.
+    """
     model = PendingEmail
     extra = 0
     can_delete = True
     max_num = 1
 
-
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
+    """
+    Custom User Admin.
+    """
     ordering = ("-date_joined",)
-
     list_display = ("email","is_active","is_staff","is_superuser")
     list_filter = ("is_active","is_staff","is_superuser","date_joined")
     search_fields = ("email","name")

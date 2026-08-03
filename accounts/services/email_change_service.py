@@ -1,14 +1,15 @@
 from django.db import transaction
-
-from accounts.models import User, PendingEmail
 from accounts.constants import OTPPurpose
+from accounts.models import User, PendingEmail
 
 from .otp_services import OTPService
 from .service_result import ServiceResult
 
 
 class EmailChangeService:
-
+    """
+    User Email Change Service.
+    """
     @staticmethod
     @transaction.atomic
     def request_email_change(user, new_email, ip):

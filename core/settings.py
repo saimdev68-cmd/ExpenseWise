@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'recurring',
     'notifications',
     "django_celery_beat",
-    'debug_toolbar',
+    # 'debug_toolbar',
     'django.contrib.humanize',
     "django.contrib.sites",
     "allauth",
@@ -69,7 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
 
@@ -171,7 +171,7 @@ CELERY_ENABLE_UTC = True
 CELERY_BEAT_SCHEDULE = {
     "process-recurring-transactions": {
         "task": "recurring.tasks.process_recurring_transactions",
-        "schedule": crontab(minute="*"),
+        "schedule": crontab(minute=0),
     },
     "daily-expense-reminder":
 

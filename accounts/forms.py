@@ -1,10 +1,15 @@
 from django import forms
-from .models import User
-from .tasks import send_password_reset_mail
-from django.contrib.auth.forms import UserCreationForm , SetPasswordForm , PasswordResetForm , PasswordChangeForm
 from django.template.loader import render_to_string
+from django.contrib.auth.forms import UserCreationForm , SetPasswordForm , PasswordResetForm , PasswordChangeForm
+
+from .models import User
+from .tasks import send_email_task
+
 
 class RegisterForm(UserCreationForm):
+    """
+    User Registration Form.
+    """
     class Meta:
         model = User
         fields = ["email", "name", "password1", "password2"]
@@ -42,18 +47,21 @@ class RegisterForm(UserCreationForm):
 
         self.fields["password1"].widget.attrs.update({
             "class": "form-control",
-            "placeholder": "Create a strong password",
+            "placeholder": "Create a password",
             "autocomplete": "new-password",
         })
 
         self.fields["password2"].widget.attrs.update({
             "class": "form-control",
-            "placeholder": "Re-enter your password",
+            "placeholder": "Re-enter password",
             "autocomplete": "new-password",
         })
     
     
 class LoginForm(forms.Form):
+    """
+    User Login Form.
+    """
     email = forms.EmailField(
         label="Email Address",
         widget=forms.EmailInput(
@@ -77,6 +85,9 @@ class LoginForm(forms.Form):
     )
 
 class OTPVerificationForm(forms.Form):
+    """
+    User OTP Verification Form.
+    """
     otp = forms.CharField(
         label="Verification Code",
         max_length=6,
@@ -92,6 +103,10 @@ class OTPVerificationForm(forms.Form):
     )
 
 class CustomPasswordResetForm(PasswordResetForm):
+    """
+    User Forget Password Email Form.
+    """
+
     email = forms.EmailField(
         label="Email Address",
         widget=forms.EmailInput(
@@ -102,13 +117,44 @@ class CustomPasswordResetForm(PasswordResetForm):
             }
         ),
     )
-    
-    def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name = None):
-        subject = render_to_string(subject_template_name,context).strip()
-        message = render_to_string(email_template_name, context)
-        send_password_reset_mail.delay(subject,message, from_email, [to_email])
+
+    def send_mail(
+        self,
+        subject_template_name,
+        email_template_name,
+        context,
+        from_email,
+        to_email,
+        html_email_template_name=None,
+    ):
+        subject = render_to_string(
+            subject_template_name,
+            context,
+        ).strip()
+
+        text_message = render_to_string(
+            email_template_name,
+            context,
+        )
+
+        html_message = None
+        if html_email_template_name:
+            html_message = render_to_string(
+                html_email_template_name,
+                context,
+            )
+
+        send_email_task.delay(
+            subject,
+            text_message,
+            html_message,
+            to_email,
+        )
     
 class CustomPasswordForm(SetPasswordForm):
+    """
+    Set New Password Form.
+    """
     new_password1 = forms.CharField(
         label="New Password",
         widget=forms.PasswordInput(
@@ -131,6 +177,9 @@ class CustomPasswordForm(SetPasswordForm):
     )
 
 class CustomPasswordChangeForm(PasswordChangeForm):
+    """
+    Set New Password Form.
+    """
     old_password = forms.CharField(
         label="Old Password",
         widget=forms.PasswordInput(
@@ -163,26 +212,33 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     )
 
 class EmailForm(forms.Form):
+    """
+    User Change Email Form.
+    """
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
             "placeholder": "Enter your new email",
+            'label':  "Email Address",
             "autocomplete": "email",
         })
     )
     
-class EmailOtpForm(forms.Form):
-    otp = forms.CharField(
-        label="Otp verifcation",
-        max_length=6,
-        widget=forms.TextInput(
-            attrs={
-                "class":"form-control",
-                "placeholder":"Enter OTP"
-            }
-        )
-    )
-
 class NameForm(forms.ModelForm):
+    """
+    User Name Edit Form.
+    """
     class Meta:
         model = User
         fields = ["name"]
+        labels = {
+            "name": "Full Name"
+        }
+        widgets = {
+            "name": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter your full name",
+                    "autocomplete": "name",
+                }
+            ),
+        }

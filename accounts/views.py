@@ -1,28 +1,35 @@
-from .forms import RegisterForm , LoginForm , OTPVerificationForm , CustomPasswordForm , EmailForm , CustomPasswordResetForm , CustomPasswordChangeForm , NameForm
-from .mixins import OtpMixin , LoginMixin , PasswordResetdoneMixin , PasswordResetCompleteMixin
-from django.shortcuts import render , redirect
+from django.urls import reverse
+from django.contrib import messages
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views import View , generic
-from django.contrib import messages
+from django.shortcuts import render , redirect
 from django.contrib.auth import  login , logout 
-from django.contrib.auth.views import PasswordResetView , PasswordResetDoneView , PasswordResetConfirmView , PasswordResetCompleteView , PasswordChangeView , PasswordChangeDoneView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .services.register_service import RegisterService
-from .services.otp_services import OTPService
-from django.views.generic import CreateView , FormView
-from .constants import OTPPurpose
-from .utils import get_client_id
-from .services.login_services import LoginService
-from .sessions.pending_user_sessions import PendingUserSession
-from django.http import JsonResponse
-from django.urls import reverse
-from .services.email_change_service import EmailChangeService
+from django.db import transaction, IntegrityError
+
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import PasswordResetView , PasswordResetDoneView , PasswordResetConfirmView , PasswordResetCompleteView , PasswordChangeView , PasswordChangeDoneView
+
+from .models import User
+from .utils import get_client_id
+from .constants import OTPPurpose
+from .mixins import OtpMixin , LoginMixin , PasswordResetdoneMixin , PasswordResetCompleteMixin , PasswordChangeDoneMixin
+from .forms import RegisterForm , LoginForm , OTPVerificationForm , CustomPasswordForm , EmailForm , CustomPasswordResetForm , CustomPasswordChangeForm , NameForm
+
+from .services.otp_services import OTPService
+from .services.login_services import LoginService
+from .services.register_service import RegisterService
+from .services.email_change_service import EmailChangeService
+from .sessions.pending_user_sessions import PendingUserSession
 
 # Create your views here.
 
 
-class SignUpView(LoginMixin, CreateView):
+class SignUpView(LoginMixin, generic.CreateView):
+    """
+    User Signup View.
+    """
     template_name = "signup.html"
     form_class = RegisterForm
 
@@ -50,7 +57,10 @@ class SignUpView(LoginMixin, CreateView):
             return JsonResponse({"success": False, "errors": form.errors}, status=400)
         return super().form_invalid(form)
     
-class OtpVerifyView(LoginMixin, OtpMixin, FormView):
+class OtpVerifyView(LoginMixin, OtpMixin, generic.FormView):
+    """
+    OTP Verification View.
+    """
     template_name = "otp_verify.html"
     form_class = OTPVerificationForm
 
@@ -82,6 +92,9 @@ class OtpVerifyView(LoginMixin, OtpMixin, FormView):
         return super().form_invalid(form)
 
 class ResendOtpView(LoginMixin, OtpMixin, View):
+    """
+    Resend OTP View.
+    """
     def post(self, request):
         user = self.get_pending_user()
         ip = get_client_id(request)
@@ -100,7 +113,10 @@ class ResendOtpView(LoginMixin, OtpMixin, View):
             return JsonResponse({"success": False, "message": result.message}, status=400)
         return redirect("otp_verify")
     
-class LoginView(LoginMixin, FormView):
+class LoginView(LoginMixin, generic.FormView):
+    """
+    User Login View.
+    """
     template_name = "login.html"
     form_class = LoginForm
     
@@ -128,6 +144,9 @@ class LoginView(LoginMixin, FormView):
         return super().form_invalid(form)
 
 class LogoutView(View):
+    """
+    User Logout View.
+    """
     def post(self,request):
         logout(request)
         messages.success(request,"Logout Successfully")
@@ -135,50 +154,40 @@ class LogoutView(View):
     
 
 class PasswordresetView(LoginMixin, PasswordResetView):
+    """
+    Password Reset View.
+    """
     template_name = "password_reset.html"
     form_class = CustomPasswordResetForm
-
-    email_template_name = "password_reset_email.txt"
-    subject_template_name = "password_reset_subject.txt"
-
+    subject_template_name = "emails/password_reset_subject.txt"
+    email_template_name = "emails/password_reset_email.txt"
+    html_email_template_name = "emails/password_reset_email.html"
     success_url = reverse_lazy("password_reset_done")
 
     def form_valid(self, form):
-        # Send password reset email
         response = super().form_valid(form)
-
-        # Mark session
         self.request.session["password_reset_done"] = True
-
-        # AJAX request
         if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return JsonResponse({
-                "success": True,
-                "redirect_url": reverse("password_reset_done"),
-            })
-
-        # Normal request
+            return JsonResponse({"success": True,"redirect_url": reverse("password_reset_done")})
         return response
 
     def form_invalid(self, form):
-
         if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return JsonResponse(
-                {
-                    "success": False,
-                    "errors": form.errors.get_json_data(),
-                },
-                status=400,
-            )
-
+            return JsonResponse({"success": False,"errors": form.errors.get_json_data()},status=400)
         return super().form_invalid(form)
     
 
 class PasswordresetdoneView(LoginMixin,PasswordResetdoneMixin,PasswordResetDoneView):
+    """
+    Password Reset Done View.
+    """
     template_name = "password_reset_done.html"
     
 
 class PasswordresetconfirmView(LoginMixin, PasswordResetConfirmView):
+    """
+    Password Reset Confirm View.
+    """
     template_name = "password_reset_confirm.html"
     form_class = CustomPasswordForm
     success_url = reverse_lazy("password_reset_complete")
@@ -186,10 +195,8 @@ class PasswordresetconfirmView(LoginMixin, PasswordResetConfirmView):
     def form_valid(self, form):
         self.request.session["password_reset_confirm"] = True
         response = super().form_valid(form)
-        
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({"success": True, "redirect_url": str(self.success_url)})
-            
         return response
 
     def form_invalid(self, form):
@@ -198,9 +205,15 @@ class PasswordresetconfirmView(LoginMixin, PasswordResetConfirmView):
         return super().form_invalid(form)
 
 class PasswordresetCompleteView(LoginMixin,PasswordResetCompleteMixin,PasswordResetCompleteView):
+    """
+    Password Reset Complete
+    """
     template_name = "password_reset_complete.html"
     
 class UserDetailView(LoginRequiredMixin,generic.DetailView):
+    """
+    User Profile View.
+    """
     template_name = "user_detail.html"
     context_object_name = "user"
 
@@ -208,6 +221,9 @@ class UserDetailView(LoginRequiredMixin,generic.DetailView):
         return self.request.user
     
 class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
+    """
+    User Edit View.
+    """
     template_name = "user_update.html"
     form_class = NameForm
     success_url = reverse_lazy("user_detail")
@@ -218,22 +234,19 @@ class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
     def form_valid(self, form):
         self.object = form.save()
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                "success": True,
-                "redirect_url": str(self.success_url)
-            })
+            return JsonResponse({"success": True,"redirect_url": str(self.success_url)})
         return super().form_valid(form)
 
     def form_invalid(self, form):
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                "success": False,
-                "errors": form.errors
-            }, status=400)
+            return JsonResponse({"success": False,"errors": form.errors}, status=400)
         return super().form_invalid(form)
     
 
 class EmailUpdateView(LoginRequiredMixin, View):
+    """
+    User Email Update View
+    """
     template_name = "email_update.html"
 
     def get(self, request):
@@ -251,11 +264,7 @@ class EmailUpdateView(LoginRequiredMixin, View):
         
         new_email = form.cleaned_data.get('email')
 
-        result = EmailChangeService.request_email_change(
-            user=request.user,
-            new_email=new_email,
-            ip=get_client_id(request),
-        )
+        result = EmailChangeService.request_email_change(user=request.user,new_email=new_email,ip=get_client_id(request))
 
         if not result.success:
             form.add_error("email", result.message)
@@ -268,14 +277,14 @@ class EmailUpdateView(LoginRequiredMixin, View):
         
         success_url = reverse("email_otp_verify")
         if is_ajax:
-            return JsonResponse({
-                "success": True, 
-                "redirect_url": success_url
-            })
+            return JsonResponse({"success": True, "redirect_url": success_url})
         return redirect(success_url)
 
 
 class EmailOtpVerifyView(LoginRequiredMixin, generic.FormView):
+    """
+    Email OTP Verification View.
+    """
     template_name = "email_otp_verify.html"
     form_class = OTPVerificationForm
 
@@ -287,11 +296,11 @@ class EmailOtpVerifyView(LoginRequiredMixin, generic.FormView):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        otp = form.cleaned_data["otp"]
+        otp = form.cleaned_data.get('otp')
         user = self.request.user
         is_ajax = self.request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
-        pending_email = getattr(user, "pending_email_change", None)
+        pending_email = getattr(user, "pending_email", None)
         if not pending_email:
             form.add_error(None, "No pending email change request found.")
             if is_ajax:
@@ -300,12 +309,7 @@ class EmailOtpVerifyView(LoginRequiredMixin, generic.FormView):
 
         ip = get_client_id(self.request)
 
-        result = OTPService.verify_otp(
-            email=pending_email.email,
-            purpose=OTPPurpose.EMAIL_CHANGE,
-            entered_otp=otp,
-            ip=ip,
-        )
+        result = OTPService.verify_otp(email=pending_email.email,purpose=OTPPurpose.EMAIL_CHANGE,entered_otp=otp,ip=ip)
 
         if not result.success:
             form.add_error(None, result.message)
@@ -313,15 +317,21 @@ class EmailOtpVerifyView(LoginRequiredMixin, generic.FormView):
                 return JsonResponse({"success": False, "errors": form.errors}, status=400)
             return self.form_invalid(form)
 
-        self.request.session.pop("email_update", None)
-        user.email = pending_email.email
-        user.save(update_fields=['email'])
-        pending_email.delete()
-        
-        messages.success(
-            self.request,
-            "OTP verified successfully. Email is updated successfully."
-        )
+        try:
+            with transaction.atomic():
+                if User.objects.filter(email=pending_email.email,is_active=True).exists():
+                    form.add_error(None, "This email is already in use.")
+                    return self.form_invalid(form)
+                
+                self.request.session.pop("email_update", None)
+                user.email = pending_email.email
+                user.save(update_fields=["email"])
+                messages.success(self.request,"OTP verified successfully. Email is updated successfully.")
+                pending_email.delete()
+
+        except IntegrityError:
+            form.add_error(None, "This email is already in use.")
+            return self.form_invalid(form)
 
         success_url = reverse("user_detail")
         if is_ajax:
@@ -334,7 +344,9 @@ class EmailOtpVerifyView(LoginRequiredMixin, generic.FormView):
         return super().form_invalid(form)
 
 class EmailResendOtpView(LoginRequiredMixin, View):
-
+    """
+    Email OTP Resend View.
+    """
     def post(self, request):
         user = request.user
         is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
@@ -346,46 +358,30 @@ class EmailResendOtpView(LoginRequiredMixin, View):
             redirect_url = reverse("email_update")
             
             if is_ajax:
-                return JsonResponse({
-                    "success": False, 
-                    "message": msg, 
-                    "redirect_url": redirect_url
-                }, status=400)
-            
+                return JsonResponse({"success": False, "message": msg, "redirect_url": redirect_url}, status=400)
             messages.error(request, msg)
             return redirect(redirect_url)
 
         ip = get_client_id(request)
 
-        result = OTPService.resend_otp(
-            email=pending_email.email,
-            purpose=OTPPurpose.EMAIL_CHANGE,
-            ip=ip,
-        )
-
+        result = OTPService.resend_otp(email=pending_email.email,purpose=OTPPurpose.EMAIL_CHANGE,ip=ip)
         success_url = reverse("email_otp_verify")
 
         if not result.success:
             if is_ajax:
-                return JsonResponse({
-                    "success": False, 
-                    "message": result.message
-                }, status=400)
-            
+                return JsonResponse({"success": False, "message": result.message}, status=400)  
             messages.error(request, result.message)
             return redirect(success_url)
 
         if is_ajax:
-            return JsonResponse({
-                "success": True, 
-                "message": result.message, 
-                "redirect_url": success_url
-            })
-
+            return JsonResponse({"success": True, "message": result.message, "redirect_url": success_url})
         messages.success(request, result.message)
         return redirect(success_url)
     
 class PasswordchangeView(LoginRequiredMixin, PasswordChangeView):
+    """
+    Password Change View.
+    """
     template_name = "password_change.html"
     form_class = CustomPasswordChangeForm
     success_url = reverse_lazy("password_change_done")
@@ -396,25 +392,16 @@ class PasswordchangeView(LoginRequiredMixin, PasswordChangeView):
         update_session_auth_hash(self.request, self.object)
         
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                "success": True,
-                "redirect_url": str(self.success_url)
-            })
+            return JsonResponse({"success": True,"redirect_url": str(self.success_url)})
         return super().form_valid(form)
 
     def form_invalid(self, form):
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                "success": False,
-                "errors": form.errors
-            }, status=400)
+            return JsonResponse({"success": False,"errors": form.errors}, status=400)
         return super().form_invalid(form)
 
-class PasswordchangeDoneView(LoginRequiredMixin, PasswordChangeDoneView):
+class PasswordchangeDoneView(LoginRequiredMixin,PasswordChangeDoneMixin, PasswordChangeDoneView):
+    """
+    Password Change Done View.
+    """
     template_name = "password_change_done.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.session.get("password_change_done"):
-            return redirect("password_change")
-        request.session.pop("password_change_done", None)
-        return super().dispatch(request, *args, **kwargs)

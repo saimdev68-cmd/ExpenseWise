@@ -14,6 +14,9 @@ from .models import Income
 
 
 class IncomeListView(IncomeQuerysetMixin, ListView):
+    """
+    User Income List.
+    """
     template_name = "income_list.html"
     context_object_name = "incomes"
     paginate_by = 10
@@ -42,21 +45,33 @@ class IncomeListView(IncomeQuerysetMixin, ListView):
 
 
 class IncomeDetailView(IncomeQuerysetMixin, DetailView):
+    """
+    View Income Detail.
+    """
     template_name = "income_detail.html"
     context_object_name = "income"
 
 
 class IncomeCreateView(LoginRequiredMixin,SuccessMessageMixin,IncomeFormMixin,CreateView):
+    """
+    Create New Income.
+    """
     success_url = reverse_lazy("income_list")
     success_message = "Income record added successfully."
 
 
 class IncomeUpdateView(IncomeQuerysetMixin,SuccessMessageMixin,IncomeFormMixin,UpdateView):
+    """
+    Edit Income .
+    """
     success_url = reverse_lazy("income_list")
     success_message = "Income record updated successfully."
 
 
 class IncomeDeleteView(IncomeQuerysetMixin, DeleteView):
+    """
+    Delete Income.
+    """
     success_url = reverse_lazy("income_list")
 
     def post(self, request, *args, **kwargs):

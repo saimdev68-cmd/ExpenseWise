@@ -1,11 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+
 from .models import RecurringTransaction
 from .forms import RecurringTransactionForm
-from django.http import JsonResponse
-from django.urls import reverse
 
 
 class RecurringTransactionQuerySetMixin(LoginRequiredMixin):
+    """
+    Recurring Transaction QuerySet Mixin.
+    """
     model = RecurringTransaction
 
     def get_queryset(self):
@@ -13,6 +16,9 @@ class RecurringTransactionQuerySetMixin(LoginRequiredMixin):
     
 
 class RecurringFormMixin:
+    """
+    Recurring Form Mixin.
+    """
     model = RecurringTransaction
     form_class = RecurringTransactionForm
     template_name = "recurringtransaction_form.html"
@@ -35,7 +41,6 @@ class RecurringFormMixin:
 
     def form_invalid(self, form):
         if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            # Convert form errors to serializable format
             errors = {}
             for field, error_list in form.errors.items():
                 errors[field] = [str(error) for error in error_list]

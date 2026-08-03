@@ -11,127 +11,230 @@
     <div class="dashboard-header-row">
         <div>
             <h1 class="welcome-title">Welcome back, {{ request.user.first_name|default:"Muhammad" }}! 👋</h1>
-            <p class="welcome-subtitle">Here's what's happening with your finances today.</p>
+            <p class="welcome-subtitle">Here's what's happening with your finances Last 30 days.</p>
         </div>
         <div class="date-badge-menu">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
             {{ today|date:"F d, Y" }}
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 0.25rem;"><path d="m6 9 6 6 6-6"/></svg>
         </div>
     </div>
 
-    <!-- 4 CONTAINERS -->
+    <!-- METRICS GRID -->
     <div class="exact-metrics-grid">
-        
         <!-- Total Income -->
         <div class="exact-metric-card">
             <div class="metric-icon-wrapper" style="background-color: #f0f0fe;">
-                <!-- Wallet with plus icon custom styling -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#4f46e5" stroke="#4f46e5" stroke-width="1"><path d="M19 7h-12v14h12c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"/><path d="M5 7c0-1.1.9-2 2-2h10V3H7c2.2 0 4 1.8 4 4v10H5V7z"/><rect x="11" y="11" width="4" height="4" rx="1" fill="#ffffff" stroke="#ffffff"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <rect x="2" y="5" width="20" height="14" rx="2" fill="#4f46e5"/>
+                    <circle cx="12" cy="12" r="3" fill="#ffffff"/>
+                    <path d="M6 9h1M6 15h1M17 9h1M17 15h1" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
             </div>
             <div class="metric-info-layout">
                 <h3>Total Income</h3>
-                <p class="exact-value">${{ metrics.income.total|floatformat:2|intcomma }}</p>
-                <div class="trend-indicator trend-up">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 5v14"/></svg>
-                    {{ metrics.income.change }}% <span>from last month</span>
-                </div>
+                <p class="exact-value">Rs {{ metrics.income.total|floatformat:0|intcomma }}</p>
             </div>
         </div>
 
         <!-- Total Expense -->
         <div class="exact-metric-card">
             <div class="metric-icon-wrapper" style="background-color: #fff0f3;">
-                <!-- Trending down business/expense visual arrow icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#ff4d6d" stroke="#ff4d6d" stroke-width="1"><circle cx="12" cy="12" r="10" fill="#fff0f3"/><path d="M17 14h-5v-5" stroke="#ff4d6d" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="m17 14-7-7-4 4" stroke="#ff4d6d" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                    <rect x="2" y="5" width="20" height="14" rx="2" fill="#ff4d6d"/>
+                    <line x1="9" y1="12" x2="15" y2="12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M6 9h1M6 15h1M17 9h1M17 15h1" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
             </div>
             <div class="metric-info-layout">
                 <h3>Total Expense</h3>
-                <p class="exact-value">${{ metrics.expense.total|floatformat:2|intcomma }}</p>
-                <div class="trend-indicator trend-down">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 12-7 7-7-7"/><path d="M12 19V5"/></svg>
-                    {{ metrics.expense.change }}% <span>from last month</span>
-                </div>
+                <p class="exact-value">Rs {{ metrics.expense.total|floatformat:0|intcomma }}</p>
             </div>
         </div>
 
         <!-- Current Balance -->
         <div class="exact-metric-card">
             <div class="metric-icon-wrapper" style="background-color: #f0f0fe;">
-                <!-- Card / Wallet emblem with internal brand initial identifier style -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#4f46e5" stroke="#4f46e5" stroke-width="1"><rect width="20" height="14" x="2" y="5" rx="3"/><path d="M6 10h3v4H6z" fill="#ffffff" stroke="#ffffff"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                    <path fill="#4f46e5" d="M4 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm15 5h2v2h-2a1 1 0 1 1 0-2z"/>
+                    <circle cx="19" cy="12" r="1" fill="#ffffff"/>
+                </svg>
             </div>
             <div class="metric-info-layout">
                 <h3>Current Balance</h3>
-                <p class="exact-value">${{ metrics.balance.total|floatformat:2|intcomma }}</p>
-                <div class="trend-indicator trend-up">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 5v14"/></svg>
-                    {{ metrics.balance.change }}% <span>from last month</span>
-                </div>
+                <p class="exact-value">Rs {{ metrics.balance.total|floatformat:0|intcomma }}</p>
             </div>
         </div>
 
         <!-- Savings Rate -->
         <div class="exact-metric-card">
             <div class="metric-icon-wrapper" style="background-color: #f0f0fe;">
-                <!-- Growth trend-up multi-bar analytics dashboard icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
             </div>
             <div class="metric-info-layout">
                 <h3>Savings Rate</h3>
                 <p class="exact-value">{{ metrics.savings_rate.total }}%</p>
-                <div class="trend-indicator trend-up">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 5v14"/></svg>
-                    {{ metrics.savings_rate.change }}% <span>from last month</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP CHARTS ROW -->
+    <div class="charts-double-layout">
+        <div class="chart-container-card">
+            <div class="chart-card-header">
+                <h2>Income vs Expense</h2>
+                <select class="chart-filter-dropdown" onchange="updateChart('bar', this.value)">
+                    <option value="this_month" selected>This Month</option>
+                    <option value="last_month">Last Month</option>
+                    <option value="last_30_days">Last 30 Days</option>
+                </select>
+            </div>
+            <div class="canvas-box">
+                <canvas id="incomeExpenseChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container-card">
+            <div class="chart-card-header">
+                <h2>Expense Categories</h2>
+                <select class="chart-filter-dropdown" onchange="updateChart('donut', this.value)">
+                    <option value="this_month" selected>This Month</option>
+                    <option value="last_month">Last Month</option>
+                    <option value="last_30_days">Last 30 Days</option>
+                </select>
+            </div>
+            <div class="donut-flex-wrapper">
+                <div class="canvas-donut-box">
+                    <canvas id="expenseCategoryChart"></canvas>
+                    <div class="donut-center-label">
+                        <span id="donutTotalAmount">$0.00</span>
+                        <label>Total</label>
+                    </div>
                 </div>
+                <div class="donut-legend-list" id="donutLegendRows"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MIDDLE TRIPLE LAYOUT -->
+    <div class="dashboard-triple-layout">
+        
+        <!-- Spending Trend -->
+        <div class="chart-container-card trend-card">
+            <div class="chart-card-header">
+                <h2>Spending Trend</h2>
+                <select class="chart-filter-dropdown" onchange="updateChart('trend', this.value)">
+                    <option value="this_month">This Month</option>
+                    <option value="last_month">Last Month</option>
+                    <option value="last_30_days">Last 30 Days</option>
+                    <option value="last_90_days">Last 90 Days</option>
+                    <option value="last_6_months" selected>Last 6 Months</option>
+                    <option value="this_year">This Year</option>
+                    <option value="last_year">Last Year</option>
+                    <option value="last_365_days">Last 365 Days</option>
+                </select>
+            </div>
+            <div class="canvas-box" style="height: 220px;">
+                <canvas id="spendingTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Budget Overview -->
+        <div class="chart-container-card">
+            <div class="chart-card-header" style="margin-bottom: 1rem;">
+                <h2>Budget Overview</h2>
+                <span class="chart-filter-dropdown">This Month</span>
+            </div>
+            <div class="budget-list">
+                {% for budget in budgets %}
+                <div class="budget-item">
+                    <div class="budget-icon-cell">
+                        <div class="b-icon"><i class="fas fa-wallet"></i></div>
+                    </div>
+                    <div class="budget-details-cell">
+                        <div class="b-header">
+                            <span class="b-cat">{{ budget.get_category_display }}</span>
+                            <span class="b-amt">Rs {{ budget.spent|floatformat:0|intcomma }} / Rs {{ budget.amount|floatformat:0|intcomma }}</span>
+                            <span class="b-pct">{{ budget.percentage_used }}%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: {{ budget.progress_percentage }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: #64748b; font-size: 0.85rem; text-align: center; margin-top: 2rem;">No budgets setup for this month.</p>
+                {% endfor %}
+            </div>
+            <div style="text-align: center; margin-top: auto; padding-top: 1rem;">
+                <a href="{% url 'budget_list' %}" class="view-all-link">View All Budgets &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="chart-container-card">
+            <div class="chart-card-header" style="margin-bottom: 1rem;">
+                <h2>Recent Transactions</h2>
+            </div>
+            <div class="transaction-list">
+                {% for tx in recent_transactions %}
+                <div class="transaction-row">
+                    <div class="tx-icon {% if tx.is_income %}tx-inc{% else %}tx-exp{% endif %}">
+                        <i class="fas {% if tx.is_income %}fa-briefcase{% else %}fa-shopping-cart{% endif %}"></i>
+                    </div>
+                    <div class="tx-info">
+                        <strong>{{ tx.title }}</strong>
+                        <span>{{ tx.get_category_display }}</span>
+                    </div>
+                    <div class="tx-meta">
+                        <span class="tx-date">{{ tx.date|date:"M d, Y" }}</span>
+                        <span class="tx-amt {% if tx.is_income %}text-positive{% else %}text-danger{% endif %}">
+                            {% if tx.is_income %}+{% else %}-{% endif %}Rs {{ tx.amount|floatformat:0|intcomma }}
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: #64748b; font-size: 0.85rem; text-align: center; margin-top: 2rem;">No recent transactions.</p>
+                {% endfor %}
             </div>
         </div>
 
     </div>
+
+    <!-- UPCOMING RECURRING PAYMENTS -->
+    <div class="recurring-section">
+        <div class="section-header">
+            <h2>Upcoming Recurring Payments</h2>
+            <a href="{% url 'recurring_list' %}" class="view-all-link">View All &rarr;</a>
+        </div>
+        <div class="recurring-grid">
+            {% for req in upcoming_recurring %}
+            <div class="recurring-card">
+                <div class="req-icon-box">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="req-info">
+                    <strong>{{ req.title }}</strong>
+                    <span>{{ req.next_run|date:"M d, Y" }}</span>
+                </div>
+                {% if req.transaction_type == 'INCOME' %}
+                <div class="req-amt positive">
+                    +Rs {{ req.amount|floatformat:0|intcomma }}
+                </div>
+                {% else %}
+                <div class="req-amt text-danger">
+                    -Rs {{ req.amount|floatformat:0|intcomma }}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p style="color: #64748b; font-size: 0.85rem;">No upcoming recurring payments.</p>
+            {% endfor %}
+        </div>
+    </div>
+
 </div>
-<!-- Include Chart.js via CDN at the top of your block if it isn't in base.html -->
+
+<!-- Include Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<div class="charts-double-layout">
-    <!-- LEFT PANEL: Income vs Expense -->
-    <div class="chart-container-card">
-        <div class="chart-card-header">
-            <h2>Income vs Expense</h2>
-            <select class="chart-filter-dropdown" data-target="left" onchange="updateDashboardCharts(this.value)">
-                <option value="this_month">This Month</option>
-                <option value="last_month">Last Month</option>
-                <option value="last_30_days">Last 30 Days</option>
-                <option value="last_90_days">Last 90 Days</option>
-            </select>
-        </div>
-        <div class="canvas-box">
-            <canvas id="incomeExpenseChart"></canvas>
-        </div>
-    </div>
-
-    <!-- RIGHT PANEL: Expense Categories breakdown -->
-    <div class="chart-container-card">
-        <div class="chart-card-header">
-            <h2>Expense Categories</h2>
-            <select class="chart-filter-dropdown" data-target="right" onchange="updateDashboardCharts(this.value)">
-                <option value="this_month">This Month</option>
-                <option value="last_month">Last Month</option>
-                <option value="last_30_days">Last 30 Days</option>
-                <option value="last_90_days">Last 90 Days</option>
-            </select>
-        </div>
-        <div class="donut-flex-wrapper">
-            <div class="canvas-donut-box">
-                <canvas id="expenseCategoryChart"></canvas>
-                <div class="donut-center-label">
-                    <span id="donutTotalAmount">$0.00</span>
-                    <label>Total</label>
-                </div>
-            </div>
-            <!-- Interactive Dynamic Legend Rows -->
-            <div class="donut-legend-list" id="donutLegendRows"></div>
-        </div>
-    </div>
-</div>
-<script src="{% static "js/dashboard.js" %}"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}

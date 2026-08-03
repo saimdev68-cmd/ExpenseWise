@@ -5,21 +5,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="{% static "css/auth_style.css" %}">
 </head>
 <body>
 
-    {% if messages %}
-    <div class="msg-toast-stack">
-        {% for message in messages %}
-            <div class="msg-toast {% if message.tags %}{{ message.tags }}{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
+    <!-- Toast container - same structure as main -->
+    <div id="toast-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="toast {{ message.tags }}">
+                    <!-- Choose icon based on message tag -->
+                    {% if message.tags == 'success' %}
+                        <i data-lucide="check-circle" class="toast-icon"></i>
+                    {% elif message.tags == 'error' %}
+                        <i data-lucide="alert-circle" class="toast-icon"></i>
+                    {% elif message.tags == 'warning' %}
+                        <i data-lucide="alert-triangle" class="toast-icon"></i>
+                    {% elif message.tags == 'info' %}
+                        <i data-lucide="info" class="toast-icon"></i>
+                    {% else %}
+                        <i data-lucide="bell" class="toast-icon"></i>
+                    {% endif %}
+                    <p class="toast-message">{{ message }}</p>
+                    <button class="toast-close"><i data-lucide="x"></i></button>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
-    {% endif %}
 
     {% block content %}{% endblock %}
+
+    <!-- Initialize Lucide icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+    <!-- Include the main scripts for toast auto-dismiss and close -->
     <script src="{% static "js/scripts.js" %}"></script>
 </body>
 </html>

@@ -9,6 +9,9 @@ from .forms import MonthlyReportForm,YearlyReportForm,CustomReportForm
 from .pdf import generate_report_pdf
 
 class MonthlyReportView(LoginRequiredMixin, TemplateView):
+    """
+    Monthly Report View.
+    """
     template_name = "monthly_report.html"
 
     def get(self, request, *args, **kwargs):
@@ -20,6 +23,9 @@ class MonthlyReportView(LoginRequiredMixin, TemplateView):
         return self.render_to_response(context)
 
 class YearlyReportView(LoginRequiredMixin, TemplateView):
+    """
+    Yearly Report View.
+    """
     template_name = "yearly_report.html"
 
     def get(self, request, *args, **kwargs):
@@ -32,6 +38,9 @@ class YearlyReportView(LoginRequiredMixin, TemplateView):
 
 
 class CustomReportView(LoginRequiredMixin, TemplateView):
+    """
+    Custom Date Range Report View.
+    """
     template_name = "custom_report.html"
 
     def get(self, request, *args, **kwargs):
@@ -43,6 +52,9 @@ class CustomReportView(LoginRequiredMixin, TemplateView):
         return self.render_to_response(context)
     
 class MonthlyPDFView(LoginRequiredMixin, View):
+    """
+    Monthly Report PDF View.
+    """
     def get(self, request, *args, **kwargs):
         month = request.GET.get("month")
         year = request.GET.get("year")
@@ -58,6 +70,9 @@ class MonthlyPDFView(LoginRequiredMixin, View):
         return response
     
 class YearlyPDFView(LoginRequiredMixin, View):
+    """
+    Yearly Report PDF View.
+    """
     def get(self, request, *args, **kwargs):
         year = request.GET.get("year")
         if not year:
@@ -71,6 +86,9 @@ class YearlyPDFView(LoginRequiredMixin, View):
         return response
     
 class CustomPDFView(LoginRequiredMixin, View):
+    """
+    Custom Date Range Report PDF View.
+    """
     def get(self, request, *args, **kwargs):
         form = CustomReportForm(request.GET)
         if not form.is_valid():

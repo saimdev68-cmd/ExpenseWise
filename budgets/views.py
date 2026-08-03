@@ -15,6 +15,9 @@ from .models import Budget
 from django.contrib import messages
 
 class BudgetListView(BudgetQuerysetMixin, ListView):
+    """
+    Budgets List View.
+    """
     template_name = "budget_list.html"
     context_object_name = "budgets"
     paginate_by = 10
@@ -49,22 +52,33 @@ class BudgetListView(BudgetQuerysetMixin, ListView):
 
 
 class BudgetCreateView(LoginRequiredMixin,SuccessMessageMixin,BudgetFormMixin,CreateView):
+    """
+    Budget Create View.
+    """
     success_url = reverse_lazy("budget_list")
     success_message = "Budget created successfully."
 
 
 class BudgetDetailView(BudgetQuerysetMixin, DetailView):
+    """
+    Budget Detail View.
+    """
     template_name = "budget_detail.html"
     context_object_name = "budget"
 
 
 class BudgetUpdateView(BudgetQuerysetMixin,SuccessMessageMixin,BudgetFormMixin,UpdateView):
+    """
+    Budget Edit View.
+    """
     success_url = reverse_lazy("budget_list")
     success_message = "Budget updated successfully."
 
 
 class BudgetDeleteView(BudgetQuerysetMixin, DeleteView):
-    """Remove SuccessMessageMixin - handled by AJAX"""
+    """
+    Budget Delete View.
+    """
     success_url = reverse_lazy("budget_list")
 
     def post(self, request, *args, **kwargs):
@@ -72,10 +86,7 @@ class BudgetDeleteView(BudgetQuerysetMixin, DeleteView):
         self.object.delete()
         
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            # Get filtered queryset with all applied filters
             queryset = budget_filter(self.get_queryset(), request.GET)
-            
-            # Get pagination parameters
             per_page = request.GET.get('per_page', 10)
             try:
                 per_page = int(per_page)
@@ -93,6 +104,9 @@ class BudgetDeleteView(BudgetQuerysetMixin, DeleteView):
 
 
 class CheckBudgetExistView(LoginRequiredMixin,View):
+    """
+    Check Budget Validation.
+    """
     def get(self,request):
         if request.headers.get("X-Requested-With") != "XMLHttpRequest":
                 return JsonResponse({"valid": False}, status=400)

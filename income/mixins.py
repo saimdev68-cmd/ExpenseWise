@@ -5,6 +5,9 @@ from .models import Income
 
 
 class IncomeQuerysetMixin(LoginRequiredMixin):
+    """
+    Income QuerySet Mixin.
+    """
     model = Income
 
     def get_queryset(self):
@@ -12,6 +15,9 @@ class IncomeQuerysetMixin(LoginRequiredMixin):
 
 
 class IncomeFormMixin:
+    """
+    Income Form Mixin.
+    """
     model = Income
     form_class = IncomeForm
     template_name = "income_form.html"

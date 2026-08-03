@@ -1,18 +1,22 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
-from django.urls import reverse
 
 from .forms import BudgetForm
 from .models import Budget
 
 
 class BudgetQuerysetMixin(LoginRequiredMixin):
+    """
+    Budget QuerySet Mixin.
+    """
     model = Budget
 
     def get_queryset(self):
         return Budget.objects.with_spent().filter(user=self.request.user).select_related("user")
     
 class BudgetFormMixin:
+    """
+    Budget Form Mixin.
+    """
     form_class = BudgetForm
     template_name = "budget_form.html"
 

@@ -1,0 +1,14 @@
+Hi,
+
+Welcome to ExpenseWise!
+
+Your email verification code is:
+
+{{ otp }}
+
+This code is valid for 10 minutes.
+
+If you did not create an ExpenseWise account, you can safely ignore this email.
+
+Regards,
+ExpenseWise Team

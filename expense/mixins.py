@@ -5,6 +5,9 @@ from .models import Expense
 
 
 class ExpenseQuerysetMixin(LoginRequiredMixin):
+    """
+    Expense QuerySet Mixin.
+    """
     model = Expense
 
     def get_queryset(self):
@@ -12,6 +15,9 @@ class ExpenseQuerysetMixin(LoginRequiredMixin):
     
     
 class ExpenseFormMixin:
+    """
+    Expense Form Mixin.
+    """
     model = Expense
     form_class = ExpenseForm
     template_name = "expense_form.html"

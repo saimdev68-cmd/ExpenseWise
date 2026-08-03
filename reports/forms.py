@@ -26,6 +26,9 @@ MONTH_CHOICES = [
 
 
 class MonthlyReportForm(forms.Form):
+    """
+    Monthly Report Form.
+    """
     month = forms.ChoiceField(label="Month",choices=MONTH_CHOICES,)
     year = forms.ChoiceField(label="Year",choices=get_year_choices,)
 
@@ -43,6 +46,9 @@ class MonthlyReportForm(forms.Form):
 
 
 class YearlyReportForm(forms.Form):
+    """
+    Yearly Report Form.
+    """
     year = forms.ChoiceField(label="Year",choices=get_year_choices)
     def clean_year(self):
         year = int(self.cleaned_data["year"])
@@ -52,6 +58,9 @@ class YearlyReportForm(forms.Form):
 
 
 class CustomReportForm(forms.Form):
+    """
+    Custom Date Range Form.
+    """
     start_date = forms.DateField(
         label="Start Date",
         widget=forms.DateInput(

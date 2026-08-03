@@ -1,47 +1,45 @@
-class EmailService:
+from django.template.loader import render_to_string
 
+class EmailService:
+    """
+    Email Service
+    """
     @staticmethod
     def email_verification_email(otp):
         subject = "Verify Your Email - ExpenseWise"
 
-        message = f"""
-Hi,
+        context = {
+            "otp": otp,
+        }
 
-Welcome to ExpenseWise!
+        html_message = render_to_string(
+            "emails/email_verification.html",
+            context,
+        )
 
-Your email verification code is:
+        plain_message = render_to_string(
+            "emails/email_verification.txt",
+            context,
+        )
 
-{otp}
-
-This code is valid for 10 minutes.
-
-If you did not create an ExpenseWise account, you can safely ignore this email.
-
-Regards,
-ExpenseWise Team
-""".strip()
-
-        return subject, message
+        return subject, plain_message, html_message
 
     @staticmethod
     def email_change_email(otp):
         subject = "Verify Your New Email - ExpenseWise"
 
-        message = f"""
-Hi,
+        context = {
+            "otp": otp,
+        }
 
-You requested to change your ExpenseWise email address.
+        html_message = render_to_string(
+            "emails/email_change.html",
+            context,
+        )
 
-Your email verification code is:
+        plain_message = render_to_string(
+            "emails/email_change.txt",
+            context,
+        )
 
-{otp}
-
-This code is valid for 10 minutes.
-
-If you did not request an email change, you can safely ignore this email.
-
-Regards,
-ExpenseWise Team
-""".strip()
-
-        return subject, message
+        return subject, plain_message, html_message

@@ -1,11 +1,14 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from .managers import UserManager
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
-# Create your models here.
+from .managers import UserManager
+
 
 class User(AbstractUser):
+    """
+    Custom User Model.
+    """
     username = None
     first_name = None
     last_name = None
@@ -31,7 +34,10 @@ class User(AbstractUser):
 
 
 class PendingEmail(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE,related_name="pending_email_change")
+    """
+    Store Pending Email.
+    """
+    user = models.OneToOneField(User,on_delete=models.CASCADE,related_name="pending_email")
     email = models.EmailField()
     
     created_at = models.DateTimeField(auto_now_add=True)
@@ -39,6 +45,8 @@ class PendingEmail(models.Model):
 
     class Meta:
         db_table = 'pending_email'
+        verbose_name = _("Pending Email")
+        verbose_name_plural = _("Pending Emails")
         ordering = ["-created_at"]
 
     def __str__(self):

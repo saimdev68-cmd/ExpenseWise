@@ -16,7 +16,6 @@ class Income(models.Model):
     """
     Stores a user's income transaction.
     """
-
     class Category(models.TextChoices):
         SALARY = "SALARY", _("Salary")
         FREELANCING = "FREELANCING", _("Freelancing")

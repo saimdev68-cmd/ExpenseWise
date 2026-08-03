@@ -1,15 +1,20 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.template.loader import render_to_string
+
+from django.shortcuts import redirect
+from django.http import JsonResponse
+from django.urls import reverse_lazy
+
 from .mixins import RecurringTransactionQuerySetMixin, RecurringFormMixin
 from .models import TransactionType, Frequency
 from .selectors import recurring_filter
-from django.template.loader import render_to_string
-from django.http import JsonResponse
-from django.shortcuts import redirect
 
 
 class RecurringTransactionListView(RecurringTransactionQuerySetMixin, ListView):
+    """
+    User Recurring Transaction List.
+    """
     template_name = "recurringtransaction_list.html"
     context_object_name = "transactions"
     paginate_by = 10
@@ -37,19 +42,31 @@ class RecurringTransactionListView(RecurringTransactionQuerySetMixin, ListView):
 
 
 class RecurringTransactionDetailView(RecurringTransactionQuerySetMixin, DetailView):
+    """
+    View Recurring Transaction Detail.
+    """
     template_name = "recurringtransaction_detail.html"
     context_object_name = "transaction"
 
 
 class RecurringTransactionCreateView(LoginRequiredMixin, RecurringFormMixin, CreateView):
+    """
+    Create New Recurring Transaction.
+    """
     success_url = reverse_lazy("recurring_list")
 
 
 class RecurringTransactionUpdateView(RecurringTransactionQuerySetMixin, RecurringFormMixin, UpdateView):
+    """
+    Edit Recurring Transaction.
+    """
     success_url = reverse_lazy("recurring_list")
 
 
 class RecurringTransactionDeleteView(RecurringTransactionQuerySetMixin, DeleteView):
+    """
+    Delete Recurring Transaction.
+    """
     success_url = reverse_lazy("recurring_list")
 
     def post(self, request, *args, **kwargs):
@@ -57,10 +74,7 @@ class RecurringTransactionDeleteView(RecurringTransactionQuerySetMixin, DeleteVi
         self.object.delete()
         
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            # Get filtered queryset with all applied filters
             queryset = recurring_filter(self.get_queryset(), request.GET)
-            
-            # Get pagination parameters
             per_page = request.GET.get('per_page', 10)
             try:
                 per_page = int(per_page)

@@ -1,14 +1,17 @@
 import secrets
-from accounts.tasks import send_otp_mail
-from accounts.caches.otp_caches import OTPCache
-from accounts.constants import OTPPurpose
-from .email_services import EmailService
-from .service_result import ServiceResult
 from accounts.models import User
 from accounts.constants import OTPPurpose
+from accounts.tasks import send_email_task
+from accounts.caches.otp_caches import OTPCache
+
+from .email_services import EmailService
+from .service_result import ServiceResult
+
 
 class OTPService:
-
+    """
+    OTP Service.
+    """
     @staticmethod
     def generate_otp():
         return "".join(str(secrets.randbelow(10)) for i in range(6))
@@ -16,7 +19,6 @@ class OTPService:
     @classmethod
     def send_otp(cls,email,purpose,ip):
         otp = cls.generate_otp()
-        print(otp)
         if not OTPCache.retrieve_ip_cooldown_expiry(ip):
             OTPCache.store_ip_cooldown(ip)
         count = OTPCache.increment_ip_otp_request_count(ip)
@@ -27,16 +29,16 @@ class OTPService:
         OTPCache.remove_otp_cooldown(ip,email)
         OTPCache.store_otp_cooldown(ip,email)
         if purpose == OTPPurpose.EMAIL_VERIFICATION:
-            subject, message = EmailService.email_verification_email(otp)
+            subject, text_message, html_message = EmailService.email_verification_email(otp)
 
         elif purpose == OTPPurpose.EMAIL_CHANGE:
-            subject, message = EmailService.email_change_email(otp)
+            subject, text_message, html_message = EmailService.email_change_email(otp)
 
         else:
             raise ValueError(
                 f"Unsupported OTP purpose: {purpose}"
             )
-        send_otp_mail.delay(subject,message,email)
+        send_email_task.delay(subject,text_message,html_message,email)
 
     
     @classmethod
