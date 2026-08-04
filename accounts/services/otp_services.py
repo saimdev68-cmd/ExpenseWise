@@ -121,5 +121,5 @@ class OTPService:
         )
         return ServiceResult(
             success = False,
-            message = f"Invalid OTP {OTPCache.MAX_OTP_VERIFICATION_ATTEMPTS - attempts} left's"
+            message = f"Invalid OTP {OTPCache.MAX_OTP_VERIFICATION_ATTEMPTS - attempts} attempts left's"
         )

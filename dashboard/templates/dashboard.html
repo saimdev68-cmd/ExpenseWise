@@ -10,7 +10,7 @@
     <!-- HEADER SECTION -->
     <div class="dashboard-header-row">
         <div>
-            <h1 class="welcome-title">Welcome back, {{ request.user.first_name|default:"Muhammad" }}! 👋</h1>
+            <h1 class="welcome-title">Welcome back, {{ request.user.name|default:"Muhammad" }}! 👋</h1>
             <p class="welcome-subtitle">Here's what's happening with your finances Last 30 days.</p>
         </div>
         <div class="date-badge-menu">
